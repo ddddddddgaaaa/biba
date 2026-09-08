@@ -19,7 +19,7 @@ html,body{margin:0;height:100%;padding:0;background:#0a1510;color:var(--text);fo
 .pbtn:hover{background:var(--accent);color:#0f1e16}
 .reset{width:100%;padding:9px;border-radius:10px;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:.2s}
 .reset:hover{background:var(--accent);color:#0f1e16}
-.frame-wrap{width:340px;height:640px;border-radius:16px;overflow:hidden;background:var(--panel);box-shadow:0 10px 34px rgba(0,0,0,.35)}
+.frame-wrap{width:850px;height:640px;border-radius:16px;overflow:hidden;background:var(--panel);box-shadow:0 10px 34px rgba(0,0,0,.35)}
 iframe{width:100%;height:100%;display:block;border:0;background:var(--panel)}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);align-items:flex-start;justify-content:center;z-index:1000}
 .modal.open{display:flex}
@@ -49,8 +49,22 @@ iframe{width:100%;height:100%;display:block;border:0;background:var(--panel)}
 .vid-opt:hover{background:rgba(74,222,128,.2);border-color:var(--accent)}
 .vid-opt.active{background:var(--accent);color:#0f1e16;border-color:var(--accent)}
 @media(max-width:900px){.app{flex-direction:column;height:auto}.side{width:90vw;max-width:540px}}
+.timer-wrapper{display:flex;flex-direction:column;align-items:center;gap:16px;align-self:flex-start;margin-top:20px}
+.timer-container{position:relative;width:180px;height:180px;display:flex;justify-content:center;align-items:center}
+.timer-container svg{position:absolute;width:100%;height:100%;transform:rotate(-90deg)}
+.timer-container circle{fill:none;stroke-width:10;stroke-linecap:round}
+.circle-bg{stroke:rgba(74,222,128,.08)}
+.circle-progress{stroke:url(#timerGradient);stroke-dasharray:502;stroke-dashoffset:0;transition:stroke-dashoffset 1s linear;filter:drop-shadow(0 0 6px rgba(74,222,128,.5))}
+.time-display{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.time-numbers{font-size:2.2rem;font-weight:900;letter-spacing:2px;color:var(--accent);text-shadow:0 0 20px rgba(74,222,128,.4)}
+.time-label{font-size:0.65rem;text-transform:uppercase;letter-spacing:3px;color:var(--muted);margin-top:6px}
+.time-label.finish{color:#f87171;text-shadow:0 0 10px rgba(239,68,68,.5)}
+.timer-controls{display:flex;gap:8px;flex-wrap:wrap;max-width:200px;justify-content:center}
+.timer-btn{padding:10px 16px;border-radius:10px;background:linear-gradient(180deg,rgba(74,222,128,.08),rgba(74,222,128,.03));color:var(--accent);font-weight:700;font-size:13px;cursor:pointer;transition:.25s;border:1px solid rgba(74,222,128,.25);min-width:50px;text-align:center;text-transform:uppercase;letter-spacing:.5px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.timer-btn:hover{background:linear-gradient(180deg,var(--accent),#22c55e);color:#0f1e16;border-color:var(--accent);box-shadow:0 4px 15px rgba(74,222,128,.4);transform:translateY(-2px)}
+.timer-btn:active{transform:translateY(0)}
+.timer-btn.active{background:linear-gradient(180deg,var(--accent),#22c55e);color:#0f1e16;border-color:var(--accent);box-shadow:0 0 20px rgba(74,222,128,.5)}
 </style>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
 <video id="bgvid" autoplay muted loop playsinline>
@@ -74,6 +88,23 @@ iframe{width:100%;height:100%;display:block;border:0;background:var(--panel)}
     <button class="reset" onclick="resetParts()">Сброс участников</button>
   </div>
   <div class="frame-wrap"><iframe id="twitch-chat-frame" title="Twitch chat for bib4ek" loading="lazy" allow="clipboard-write"></iframe></div>
+  <div class="timer-wrapper">
+    <div class="timer-container">
+      <svg><defs><linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#4ade80"/><stop offset="100%" stop-color="#22c55e"/></linearGradient></defs>
+      <circle class="circle-bg" cx="90" cy="90" r="80"></circle>
+      <circle class="circle-progress" cx="90" cy="90" r="80" id="circleProgress"></circle></svg>
+      <div class="time-display">
+        <span class="time-numbers" id="timeDisplay">00:00</span>
+        <span class="time-label" id="timeLabel">Осталось</span>
+      </div>
+    </div>
+    <div class="timer-controls">
+      <button class="timer-btn" onclick="adjustTime(60)">+1</button>
+      <button class="timer-btn" onclick="adjustTime(-60)">-1</button>
+      <button class="timer-btn" id="btnStart" onclick="startTimer()">Старт</button>
+      <button class="timer-btn" id="btnPause" onclick="pauseTimer()">Пауза</button>
+    </div>
+  </div>
 </div>
 <div class="modal" id="modal">
   <div class="tablebox">
@@ -95,6 +126,8 @@ var sock=null;
 var vids=['biba1.mp4','biba2.mp4','biba3.mp4'];
 var vidx=0;
 var vidMenuOpen=false;
+var timerSeconds=0,timerInterval=null,timerRunning=false;
+var MAX_DASH=2*Math.PI*80;
 
 document.getElementById('code').value=code;
 
@@ -167,6 +200,59 @@ function switchVid(idx){
   document.getElementById('vidToggle').classList.remove('open');
 }
 
+function displayTimer(){
+  var m=Math.floor(timerSeconds/60);
+  var s=timerSeconds%60;
+  document.getElementById('timeDisplay').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  var total=timerSeconds>0?timerSeconds:1;
+  var elapsed=0;
+  if(timerInterval||!timerRunning){
+    var origTotal=window._origTotal||60;
+    elapsed=origTotal-timerSeconds;
+    var progress=elapsed/origTotal;
+    document.getElementById('circleProgress').style.strokeDashoffset=MAX_DASH*(1-progress);
+  }
+}
+
+function adjustTime(sec){
+  timerSeconds=Math.max(0,timerSeconds+sec);
+  window._origTotal=timerSeconds>0?timerSeconds:60;
+  displayTimer();
+  var origTotal=window._origTotal;
+  var elapsed=origTotal-timerSeconds;
+  var progress=elapsed/origTotal;
+  document.getElementById('circleProgress').style.strokeDashoffset=MAX_DASH*(1-progress);
+}
+
+function startTimer(){
+  if(timerRunning)return;
+  timerRunning=true;
+  document.getElementById('btnStart').classList.add('active');
+  document.getElementById('btnPause').classList.remove('active');
+  window._origTotal=timerSeconds>0?timerSeconds:60;
+  timerInterval=setInterval(function(){
+    if(timerSeconds>0){
+      timerSeconds--;
+      displayTimer();
+      var origTotal=window._origTotal;
+      var elapsed=origTotal-timerSeconds;
+      var progress=elapsed/origTotal;
+      document.getElementById('circleProgress').style.strokeDashoffset=MAX_DASH*(1-progress);
+    }else{
+      pauseTimer();
+      document.getElementById('timeLabel').textContent='Время вышло';
+      document.getElementById('timeLabel').classList.add('finish');
+    }
+  },1000);
+}
+
+function pauseTimer(){
+  timerRunning=false;
+  clearInterval(timerInterval);
+  document.getElementById('btnStart').classList.remove('active');
+  document.getElementById('btnPause').classList.add('active');
+}
+
 function connect(){
   if(sock)try{sock.close()}catch(e){}
   sock=new WebSocket('wss://irc-ws.chat.twitch.tv:443');
@@ -201,6 +287,7 @@ function connect(){
 var f=document.getElementById('twitch-chat-frame');
 f.src='https://www.twitch.tv/embed/'+CH+'/chat?parent='+encodeURIComponent(location.hostname||'localhost')+'&darkpopout';
 
+displayTimer();
 connect();
 render();
 </script>
