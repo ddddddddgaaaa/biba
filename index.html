@@ -3,10 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <title>Twitch Chat - bib4ek</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0f1e16;--panel:#16261d;--accent:#4ade80;--accent-soft:rgba(74,222,128,.06);--text:#e8f5ec;--muted:#9fbfa9}
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;padding:0;background:#0a1510;color:var(--text);font-family:'Proxima Nova Cond','Proxima Nova Condensed','ProximaNovaCond-Black',Oswald,'Arial Narrow',Arial,sans-serif}
+html,body{margin:0;height:100%;padding:0;background:#0a1510;color:var(--text);font-family:'Inter',sans-serif;font-weight:600}
 #bgvid{position:fixed;top:0;left:0;width:100vw;height:100vh;object-fit:cover;z-index:0;opacity:.4;pointer-events:none}
 .app{position:relative;z-index:1;display:flex;height:100vh;gap:18px;padding:22px;align-items:flex-start;justify-content:center}
 .side{width:340px;min-height:170px;display:flex;flex-direction:column;gap:12px;background:var(--panel);border-radius:16px;padding:16px;box-shadow:0 10px 34px rgba(0,0,0,.35);overflow:visible}
@@ -129,19 +130,22 @@ iframe{width:100%;height:100%;display:block;border:0;background:var(--panel)}
 .win-grid{display:grid;grid-template-columns:1fr 1fr 340px;gap:18px;flex-grow:1;margin-top:18px;overflow:hidden}
 .win-card{background:rgba(22,38,29,.8);border:1px solid rgba(74,222,128,.25);border-radius:16px;padding:18px;display:flex;flex-direction:column;overflow:hidden}
 .win-card h4{margin-top:0;color:var(--accent);font-size:12px;text-transform:uppercase;letter-spacing:1px}
-#win-chat-history{overflow-y:auto;flex-grow:1;font-size:12px}
+#win-chat-history{overflow-y:auto;flex-grow:1;font-size:12px;min-height:0}
+#win-chat-history::-webkit-scrollbar{width:5px}
+#win-chat-history::-webkit-scrollbar-thumb{background:var(--accent);border-radius:8px}
+#win-chat-history::-webkit-scrollbar-track{background:rgba(74,222,128,.05);border-radius:8px}
 #win-chat-history div{padding:5px 0;border-bottom:1px solid rgba(74,222,128,.05)}
 #win-chat-history small{color:var(--muted)}
 .win-response-msg{background:rgba(74,222,128,.08) !important;border-left:3px solid var(--accent);border-radius:6px;padding:6px 10px !important;margin:4px 0 !important}
-.winner-timer-section{margin-top:12px}
-.winner-timer-section .timer-display{font-size:28px;padding:8px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--accent);color:var(--accent);text-align:center;cursor:pointer}
-.timer-controls-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
 .win-stats-row{display:flex;gap:15px;margin-bottom:10px}
 .win-stat-item{padding:8px 0}
 .win-stat-item small{color:var(--muted);font-size:10px;text-transform:uppercase}
 .editable-stat{font-size:18px;font-weight:bold;color:var(--accent);cursor:pointer;transition:.2s}
 .editable-stat:hover{text-shadow:0 0 10px var(--accent)}
-#win-drop-history{overflow-y:auto;flex-grow:1;font-size:11px}
+#win-drop-history{overflow-y:auto;flex-grow:1;font-size:11px;min-height:0}
+#win-drop-history::-webkit-scrollbar{width:5px}
+#win-drop-history::-webkit-scrollbar-thumb{background:var(--accent);border-radius:8px}
+#win-drop-history::-webkit-scrollbar-track{background:rgba(74,222,128,.05);border-radius:8px}
 #win-drop-history .hist-row{display:flex;flex-direction:column;border-bottom:1px solid rgba(74,222,128,.05);padding:6px 0}
 .win-form{background:rgba(22,38,29,.6);border:1px solid rgba(74,222,128,.25);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:8px}
 .win-form h3{margin:0;color:var(--accent);font-size:13px;text-transform:uppercase;letter-spacing:1px;text-align:center}
@@ -203,6 +207,7 @@ iframe{width:100%;height:100%;display:block;border:0;background:var(--panel)}
 
 <!-- WHEEL MODAL -->
 <div class="wheel-modal" id="wheelModal">
+  <div class="close-x" onclick="closeWheel()">&times;</div>
   <div class="wheel-container">
     <div class="wheel-arrow"></div>
     <div class="wheel-nick-display" id="wheelNick">---</div>
@@ -228,7 +233,34 @@ iframe{width:100%;height:100%;display:block;border:0;background:var(--panel)}
       <button class="btn" onclick="setDur(15)">15</button>
     </div>
     <button class="btn danger" onclick="resetWheelParticipants()">СБРОСИТЬ</button>
+    <button class="btn" onclick="openWheelStats()">СТАТИСТИКА</button>
     <button class="btn spin-btn" id="spinBtn" onclick="executeSpin()">КРУТИТЬ!</button>
+    <button class="btn spin-btn" id="spinBtn" onclick="executeSpin()">КРУТИТЬ!</button>
+  </div>
+</div>
+
+<!-- WHEEL STATISTICS MODAL -->
+<div class="modal" id="wheelStatsModal">
+  <div class="tablebox" style="width:600px;max-width:95vw">
+    <h3>СТАТИСТИКА РУЛЕТКИ</h3>
+    <div class="search-row" style="display:flex;gap:8px;margin-bottom:10px">
+      <input class="search" id="wheelStatsSearch" placeholder="Поиск по нику..." oninput="renderWheelStats()" style="flex:1">
+    </div>
+    <div class="wheel-stats-table" style="max-height:60vh;overflow-y:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead style="position:sticky;top:0;background:var(--panel)">
+          <tr style="border-bottom:2px solid var(--accent)">
+            <th style="padding:8px;text-align:left;color:var(--accent)">Ник</th>
+            <th style="padding:8px;text-align:right;color:var(--accent)">Вывод</th>
+            <th style="padding:8px;text-align:right;color:var(--accent)">Деп</th>
+            <th style="padding:8px;text-align:left;color:var(--accent)">Telegram</th>
+            <th style="padding:8px;text-align:left;color:var(--accent)">Дата</th>
+          </tr>
+        </thead>
+        <tbody id="wheelStatsBody"></tbody>
+      </table>
+    </div>
+    <button class="close" onclick="closeWheelStats()">Закрыть</button>
   </div>
 </div>
 
@@ -248,17 +280,6 @@ iframe{width:100%;height:100%;display:block;border:0;background:var(--panel)}
       <div class="win-card">
         <h4>Сообщения в этом стриме:</h4>
         <div id="win-chat-history"></div>
-        <div class="winner-timer-section">
-          <div id="winner-timer" class="timer-display" onclick="enableWinnerTimerEdit()">00:02:00</div>
-          <input type="text" id="winner-timer-input" style="display:none; width: 100%; box-sizing: border-box; background: #000; color: var(--accent); border: 1px solid var(--accent); font-size: 24px; text-align: center;">
-          <div class="timer-controls-grid">
-            <button class="timer-btn" onclick="adjustWinnerTimer(60)">+1:00</button>
-            <button class="timer-btn" onclick="adjustWinnerTimer(-60)">-1:00</button>
-            <button class="timer-btn" onclick="adjustWinnerTimer(30)">+0:30</button>
-            <button class="timer-btn" onclick="adjustWinnerTimer(-30)">-0:30</button>
-          </div>
-          <button class="timer-btn start-btn" onclick="toggleWinnerTimer()">СТАРТ / ПАУЗА</button>
-        </div>
       </div>
       <div id="win-stat-card" class="win-card">
         <h4>История игрока (Global):</h4>
@@ -421,11 +442,41 @@ function startSpin(mode){
 
 function getRandomParticipant(){return wheelParticipants[Math.floor(Math.random()*wheelParticipants.length)];}
 
+// WHEEL STATISTICS FUNCTIONS
+function openWheelStats(){renderWheelStats();document.getElementById('wheelStatsModal').classList.add('open');}
+function closeWheelStats(){document.getElementById('wheelStatsModal').classList.remove('open');}
+function renderWheelStats(){
+  var q=document.getElementById('wheelStatsSearch').value.trim().toLowerCase();
+  var body=document.getElementById('wheelStatsBody');
+  body.innerHTML='';
+  var rows=[];
+  Object.keys(winnerHistory).forEach(function(key){
+    (winnerHistory[key]||[]).forEach(function(h){
+      if(h.isReroll)return;
+      if(q&&key.indexOf(q)<0)return;
+      rows.push({name:key,amount:h.amount||0,deposit:h.deposit||0,tg:h.tg||'---',date:h.date||'---'});
+    });
+  });
+  rows.reverse();
+  if(rows.length===0){
+    body.innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted)">Нет данных</td></tr>';
+    return;
+  }
+  body.innerHTML=rows.map(function(r){
+    return'<tr>'+
+      '<td style="padding:7px;border-bottom:1px solid rgba(74,222,128,.05);color:var(--accent);font-weight:700">'+esc(r.name)+
+      '</td><td style="padding:7px;border-bottom:1px solid rgba(74,222,128,.05);text-align:right;color:#22c55e;font-weight:700">'+r.amount.toLocaleString()+' ₽'+
+      '</td><td style="padding:7px;border-bottom:1px solid rgba(74,222,128,.05);text-align:right;color:#f59e0b;font-weight:700">'+r.deposit.toLocaleString()+' ₽'+
+      '</td><td style="padding:7px;border-bottom:1px solid rgba(74,222,128,.05);color:var(--muted)">'+esc(r.tg)+
+      '</td><td style="padding:7px;border-bottom:1px solid rgba(74,222,128,.05);color:var(--muted);font-size:11px">'+esc(r.date)+
+      '</td></tr>';
+  }).join('');
+}
+
 function startQuickRoll(){if(parts.size===0){alert('Нет участников!');return;}var arr=Array.from(parts);showWinner(arr[Math.floor(Math.random()*arr.length)]);}
 
 // WINNER SCREEN VARIABLES (from eneeergyshow mechanics)
 var winTimerActive=false;
-var winnerTimerSeconds=120,winnerTimerRunning=false;
 var winnerHistory=JSON.parse(localStorage.getItem('bib4ek_winner_history')||'{}');
 var userMessages={};
 var rerollCount=0;
@@ -442,7 +493,6 @@ function showWinner(name){
   winNick.classList.remove('winner-responded');
   timerLabel.classList.remove('timer-responded');
   timerLabel.innerText='00:00:00';
-  updateWinnerTimerDisplay();
   statusLabel.classList.remove('winner-responded');
   statusLabel.style.color='var(--accent)';
   statusLabel.innerText='WINNER FOUND';
@@ -526,52 +576,6 @@ function editWinnerCounter(type){
   if(type==='count')document.getElementById('win-count-stat').innerText=val;
   if(type==='sum')document.getElementById('win-sum-stat').innerText=parseInt(val).toLocaleString()+' ₽';
   if(type==='dep')document.getElementById('win-dep-stat').innerText=parseInt(val).toLocaleString()+' ₽';
-}
-
-function updateWinnerTimerDisplay(){
-  var h=Math.floor(winnerTimerSeconds/3600).toString().padStart(2,'0');
-  var m=Math.floor((winnerTimerSeconds%3600)/60).toString().padStart(2,'0');
-  var s=(winnerTimerSeconds%60).toString().padStart(2,'0');
-  var wt=document.getElementById('winner-timer');
-  if(wt)wt.innerText=h+':'+m+':'+s;
-}
-
-function adjustWinnerTimer(delta){
-  winnerTimerSeconds=Math.max(0,winnerTimerSeconds+delta);
-  updateWinnerTimerDisplay();
-}
-
-function toggleWinnerTimer(){
-  winnerTimerRunning=!winnerTimerRunning;
-  if(winnerTimerRunning){
-    clearInterval(window.winTimerInt);
-    window.winTimerInt=setInterval(function(){
-      if(winnerTimerRunning&&winnerTimerSeconds>0){
-        winnerTimerSeconds--;
-        updateWinnerTimerDisplay();
-      }
-    },1000);
-  }else{
-    clearInterval(window.winTimerInt);
-  }
-}
-
-function enableWinnerTimerEdit(){
-  winnerTimerRunning=false;
-  clearInterval(window.winTimerInt);
-  var d=document.getElementById('winner-timer');
-  var i=document.getElementById('winner-timer-input');
-  d.style.display='none';
-  i.style.display='block';
-  i.value=d.innerText;
-  i.focus();
-  i.onblur=function(){
-    var p=i.value.split(':').map(Number).reverse();
-    winnerTimerSeconds=(p[0]||0)+(p[1]||0)*60+(p[2]||0)*3600;
-    updateWinnerTimerDisplay();
-    i.style.display='none';
-    d.style.display='block';
-  };
 }
 
 function closeWinnerScreen(){
