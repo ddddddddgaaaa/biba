@@ -320,7 +320,65 @@ function drawWheel(angle){var canvas=document.getElementById('wheelCanvas');var 
 
 function executeSpin(){if(wheelParticipants.length===0)return;document.getElementById('spinBtn').disabled=true;startSpin(selectedSpinMode);}
 
-function startSpin(mode){var duration=(parseInt(document.getElementById('durInput').value)||5)*1000;var n=wheelParticipants.length;if(n===0)return;isWheelSpinning=true;var slice=(Math.PI*2)/n;var winner;if(mode==='elimination'){winner=getRandomParticipant();}else{winner=getRandomParticipant();}var winnerIdx=wheelParticipants.indexOf(winner);if(winnerIdx===-1)winnerIdx=Math.floor(Math.random()*n);winner=wheelParticipants[winnerIdx];var fullSpins=Math.PI*2*(6+Math.floor(Math.random()*4));var jitter=(Math.random()-.5)*slice*.3;var endAngle=-Math.PI/2-(winnerIdx*slice+slice/2)-fullSpins+jitter;var startAngle=0;var startTimestamp=null;function animate(ts){if(!startTimestamp)startTimestamp=ts;var progress=Math.min((ts-startTimestamp)/duration,1);var ease=1-Math.pow(1-progress,4);var currentAngle=startAngle+(endAngle-startAngle)*ease;drawWheel(currentAngle);if(progress<1){requestAnimationFrame(animate);}else{drawWheel(endAngle);isWheelSpinning=false;if(mode==='normal'){showWinner(winner);document.getElementById('spinBtn').disabled=false;}else{document.getElementById('elim-log').innerText='❌ ВЫБЫЛ: '+winner;wheelParticipants.splice(winnerIdx,1);if(wheelParticipants.length===0){document.getElementById('spinBtn').disabled=false;}else if(wheelParticipants.length===1){setTimeout(function(){drawWheel(0);showWinner(wheelParticipants[0]);document.getElementById('spinBtn').disabled=false;},1500);}else{setTimeout(function(){drawWheel(0);document.getElementById('spinBtn').disabled=false;},1000);}}}requestAnimationFrame(animate);}
+/* ====== ИСПРАВЛЕННАЯ ФУНКЦИЯ ======
+   Раньше здесь отсутствовал начальный вызов requestAnimationFrame(animate)
+   после определения функции animate, а лишний вызов стоял внутри самой
+   animate вне блока if(progress<1) — из-за этого анимация либо не
+   запускалась вовсе, либо зацикливалась после завершения.
+   Также не хватало закрывающей скобки функции startSpin. */
+function startSpin(mode){
+  var duration=(parseInt(document.getElementById('durInput').value)||5)*1000;
+  var n=wheelParticipants.length;
+  if(n===0)return;
+  isWheelSpinning=true;
+  var slice=(Math.PI*2)/n;
+  var winner=getRandomParticipant();
+  var winnerIdx=wheelParticipants.indexOf(winner);
+  if(winnerIdx===-1)winnerIdx=Math.floor(Math.random()*n);
+  winner=wheelParticipants[winnerIdx];
+  var fullSpins=Math.PI*2*(6+Math.floor(Math.random()*4));
+  var jitter=(Math.random()-.5)*slice*.3;
+  var endAngle=-Math.PI/2-(winnerIdx*slice+slice/2)-fullSpins+jitter;
+  var startAngle=0;
+  var startTimestamp=null;
+
+  function animate(ts){
+    if(!startTimestamp)startTimestamp=ts;
+    var progress=Math.min((ts-startTimestamp)/duration,1);
+    var ease=1-Math.pow(1-progress,4);
+    var currentAngle=startAngle+(endAngle-startAngle)*ease;
+    drawWheel(currentAngle);
+    if(progress<1){
+      requestAnimationFrame(animate);
+    }else{
+      drawWheel(endAngle);
+      isWheelSpinning=false;
+      if(mode==='normal'){
+        showWinner(winner);
+        document.getElementById('spinBtn').disabled=false;
+      }else{
+        document.getElementById('elim-log').innerText='❌ ВЫБЫЛ: '+winner;
+        wheelParticipants.splice(winnerIdx,1);
+        if(wheelParticipants.length===0){
+          document.getElementById('spinBtn').disabled=false;
+        }else if(wheelParticipants.length===1){
+          setTimeout(function(){
+            drawWheel(0);
+            showWinner(wheelParticipants[0]);
+            document.getElementById('spinBtn').disabled=false;
+          },1500);
+        }else{
+          setTimeout(function(){
+            drawWheel(0);
+            document.getElementById('spinBtn').disabled=false;
+          },1000);
+        }
+      }
+    }
+  }
+
+  requestAnimationFrame(animate);
+}
 
 function getRandomParticipant(){return wheelParticipants[Math.floor(Math.random()*wheelParticipants.length)];}
 
@@ -352,7 +410,8 @@ var mk='PRIVMSG #'+CH+' :';if(d.indexOf(mk)<0)return;var user,msg;
 if(d.charAt(0)==='@'){var p=d.split(' ');user=p[1].split('!')[0].substring(1);msg=d.split(mk)[1].trim();}else{user=d.split('!')[0].substring(1);msg=d.split(mk)[1].trim();}
 if(msg.trim().toLowerCase()===code.toLowerCase()&&!parts.has(user)){parts.add(user);render();}
 if(currentWinner&&!winnerResponded){addWinnerMessage(user,msg);}};
-sock.onclose=function(){setTimeout(connect,5000);};}
+sock.onclose=function(){setTimeout(connect,5000);};
+}
 
 var f=document.getElementById('twitch-chat-frame');
 f.src='https://www.twitch.tv/embed/'+CH+'/chat?parent='+encodeURIComponent(location.hostname||'localhost')+'&darkpopout';
@@ -360,6 +419,7 @@ f.src='https://www.twitch.tv/embed/'+CH+'/chat?parent='+encodeURIComponent(locat
 displayTimer();
 connect();
 render();
+
 </script>
 </body>
 </html>
