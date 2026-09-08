@@ -19,7 +19,7 @@ html,body{margin:0;height:100%;padding:0;background:#0a1510;color:var(--text);fo
 .pbtn:hover{background:var(--accent);color:#0f1e16}
 .reset{width:100%;padding:9px;border-radius:10px;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:.2s}
 .reset:hover{background:var(--accent);color:#0f1e16}
-.frame-wrap{width:850px;height:710px;border-radius:16px;overflow:hidden;background:var(--panel);box-shadow:0 10px 34px rgba(0,0,0,.35)}
+.frame-wrap{width:850px;height:720px;border-radius:16px;overflow:hidden;background:var(--panel);box-shadow:0 10px 34px rgba(0,0,0,.35)}
 iframe{width:100%;height:100%;display:block;border:0;background:var(--panel)}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);align-items:flex-start;justify-content:center;z-index:1000}
 .modal.open{display:flex}
@@ -64,6 +64,44 @@ iframe{width:100%;height:100%;display:block;border:0;background:var(--panel)}
 .timer-btn:hover{background:linear-gradient(180deg,var(--accent),#22c55e);color:#0f1e16;border-color:var(--accent);box-shadow:0 4px 15px rgba(74,222,128,.4);transform:translateY(-2px)}
 .timer-btn:active{transform:translateY(0)}
 .timer-btn.active{background:linear-gradient(180deg,var(--accent),#22c55e);color:#0f1e16;border-color:var(--accent);box-shadow:0 0 20px rgba(74,222,128,.5)}
+.winner-btn{width:100%;padding:10px;border-radius:10px;background:linear-gradient(180deg,rgba(74,222,128,.15),rgba(74,222,128,.05));color:var(--accent);font-weight:800;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:.25s;border:1px solid rgba(74,222,128,.3);margin-top:4px}
+.winner-btn:hover{background:linear-gradient(180deg,var(--accent),#22c55e);color:#0f1e16;border-color:var(--accent);box-shadow:0 4px 15px rgba(74,222,128,.4)}
+.winner-options{display:flex;flex-direction:column;gap:6px;margin-top:6px;max-height:0;overflow:hidden;transition:max-height .3s ease,opacity .3s ease;opacity:0}
+.winner-options.show{max-height:100px;opacity:1}
+.winner-opt{padding:10px;border-radius:8px;background:rgba(22,38,29,.9);color:var(--accent);font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:.2s;border:1px solid rgba(74,222,128,.2);text-align:center}
+.winner-opt:hover{background:rgba(74,222,128,.2);border-color:var(--accent)}
+.winner-screen{display:none;position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,rgba(10,21,16,.97),rgba(22,38,29,.99));flex-direction:column;align-items:center;justify-content:center;animation:fadeIn .5s ease}
+.winner-screen.show{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.winner-title{font-size:1.2rem;color:var(--muted);text-transform:uppercase;letter-spacing:4px;margin-bottom:20px}
+.winner-name{font-size:4rem;font-weight:900;color:var(--accent);text-shadow:0 0 40px rgba(74,222,128,.6);text-transform:uppercase;letter-spacing:3px;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.stopwatch{position:fixed;top:30px;right:30px;font-size:3.5rem;font-weight:900;color:var(--accent);text-shadow:0 0 30px rgba(74,222,128,.5);font-variant-numeric:tabular-nums}
+.stopwatch.ms{font-size:2rem;color:var(--muted);margin-top:5px}
+.winner-messages{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);display:flex;gap:40px;max-width:800px;width:100%}
+.msg-box{flex:1;background:rgba(22,38,29,.9);border-radius:12px;padding:15px;border:1px solid rgba(74,222,128,.2);max-height:150px;overflow-y:auto}
+.msg-box h4{color:var(--accent);font-size:10px;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px}
+.msg-box.left{text-align:left}
+.msg-box.right{text-align:right}
+.msg-item{padding:4px 0;border-bottom:1px solid rgba(74,222,128,.05);font-size:12px}
+.msg-item .nick{color:var(--accent);font-weight:700}
+.msg-item.highlight{background:rgba(74,222,128,.15);border-radius:4px;padding:4px 8px;margin:2px -8px}
+.winner-links{position:fixed;bottom:30px;left:30px;display:flex;flex-direction:column;gap:8px}
+.winner-link{padding:8px 16px;border-radius:8px;background:rgba(22,38,29,.9);color:var(--accent);font-size:11px;text-transform:uppercase;letter-spacing:1px;text-decoration:none;border:1px solid rgba(74,222,128,.2);transition:.2s}
+.winner-link:hover{background:rgba(74,222,128,.2);border-color:var(--accent)}
+.save-btn{position:fixed;top:30px;left:30px;padding:12px 24px;border-radius:10px;background:linear-gradient(180deg,var(--accent),#22c55e);color:#0f1e16;font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:1px;cursor:pointer;border:none;box-shadow:0 4px 20px rgba(74,222,128,.4);transition:.25s}
+.save-btn:hover{transform:translateY(-2px);box-shadow:0 6px 25px rgba(74,222,128,.5)}
+.save-btn:active{transform:translateY(0)}
+.statistics-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);align-items:center;justify-content:center;z-index:10000}
+.statistics-modal.show{display:flex}
+.statistics-box{width:600px;max-width:90vw;max-height:80vh;background:var(--panel);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;box-shadow:0 14px 40px rgba(0,0,0,.6)}
+.statistics-box h3{margin:0;color:var(--accent);font-size:14px;letter-spacing:1.5px;text-transform:uppercase;text-align:center}
+.stat-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.stat-item{background:rgba(0,0,0,.2);border-radius:8px;padding:10px 14px;border:1px solid rgba(74,222,128,.1)}
+.stat-item .date{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:1px}
+.stat-item .winner-name-stat{color:var(--accent);font-weight:800;font-size:14px;margin:4px 0}
+.stat-item .time-stat{color:var(--text);font-size:12px}
+.stat-item .msgs-stat{color:var(--muted);font-size:11px;margin-top:4px}
 </style>
 </head>
 <body>
@@ -86,6 +124,11 @@ iframe{width:100%;height:100%;display:block;border:0;background:var(--panel)}
   <div class="side">
     <button class="pbtn" onclick="openModal()">УЧАСТНИКИ<span class="num" id="cnt">0</span></button>
     <button class="reset" onclick="resetParts()">Сброс участников</button>
+    <button class="winner-btn" onclick="toggleWinnerMenu()">ВЫБРАТЬ ПОБЕДИТЕЛЯ</button>
+    <div class="winner-options" id="winnerOptions">
+      <button class="winner-opt" onclick="startRoulette()">РУЛЕТКА</button>
+      <button class="winner-opt" onclick="startQuickRoll()">БЫСТРЫЙ РОЛ</button>
+    </div>
   </div>
   <div class="frame-wrap"><iframe id="twitch-chat-frame" title="Twitch chat for bib4ek" loading="lazy" allow="clipboard-write"></iframe></div>
   <div class="timer-wrapper">
@@ -100,12 +143,43 @@ iframe{width:100%;height:100%;display:block;border:0;background:var(--panel)}
     </div>
     <div class="timer-controls">
       <button class="timer-btn" onclick="adjustTime(60)">+1</button>
-      <button class="timer-btn" onclick="adjustTime(-60)">-1</button>
+ <button class="timer-btn" onclick="adjustTime(-60)">-1</button>
       <button class="timer-btn" id="btnStart" onclick="startTimer()">Старт</button>
       <button class="timer-btn" id="btnPause" onclick="pauseTimer()">Пауза</button>
     </div>
   </div>
 </div>
+
+<div class="winner-screen" id="winnerScreen">
+  <div class="winner-title">ПОБЕДИТЕЛЬ</div>
+  <div class="winner-name" id="winnerName">-</div>
+  <div class="winner-messages">
+    <div class="msg-box left" id="msgLeft">
+      <h4>Сообщения слева</h4>
+    </div>
+    <div class="msg-box right" id="msgRight">
+      <h4>Сообщения справа</h4>
+    </div>
+  </div>
+  <div class="winner-links">
+    <a class="winner-link" href="#" id="depLink" target="_blank">Депозит</a>
+    <a class="winner-link" href="#" id="tgLink" target="_blank">Telegram</a>
+  </div>
+</div>
+
+<div class="stopwatch" id="stopwatch">00:00</div>
+<div class="stopwatch ms" id="stopwatchMs">.00</div>
+
+<button class="save-btn" id="saveBtn" onclick="saveStatistics()">Сохранить</button>
+
+<div class="statistics-modal" id="statsModal">
+  <div class="statistics-box">
+    <h3>СТАТИСТИКА</h3>
+    <div class="stat-list" id="statList"></div>
+    <button class="close" onclick="closeStats()">Закрыть</button>
+  </div>
+</div>
+
 <div class="modal" id="modal">
   <div class="tablebox">
     <h3>УЧАСТНИКИ: <span id="cnt2">0</span></h3>
@@ -118,6 +192,7 @@ iframe{width:100%;height:100%;display:block;border:0;background:var(--panel)}
     <button class="close" onclick="closeModal()">Закрыть</button>
   </div>
 </div>
+
 <script>
 var CH='bib4ek';
 var code=localStorage.getItem('bib4ek_code')||'+';
@@ -128,6 +203,15 @@ var vidx=0;
 var vidMenuOpen=false;
 var timerSeconds=0,timerInterval=null,timerRunning=false;
 var MAX_DASH=2*Math.PI*80;
+var winnerMenuOpen=false;
+var currentWinner=null;
+var stopwatchInterval=null;
+var stopwatchStartTime=null;
+var stopwatchRunning=false;
+var winnerResponded=false;
+var winnerMessages=[];
+var statistics=JSON.parse(localStorage.getItem('bib4ek_stats')||'[]');
+var currentSession=null;
 
 document.getElementById('code').value=code;
 
@@ -204,24 +288,16 @@ function displayTimer(){
   var m=Math.floor(timerSeconds/60);
   var s=timerSeconds%60;
   document.getElementById('timeDisplay').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
-  var total=timerSeconds>0?timerSeconds:1;
-  var elapsed=0;
-  if(timerInterval||!timerRunning){
-    var origTotal=window._origTotal||60;
-    elapsed=origTotal-timerSeconds;
-    var progress=elapsed/origTotal;
-    document.getElementById('circleProgress').style.strokeDashoffset=MAX_DASH*(1-progress);
-  }
+  var origTotal=window._origTotal||60;
+  var elapsed=origTotal-timerSeconds;
+  var progress=origTotal>0?elapsed/origTotal:0;
+  document.getElementById('circleProgress').style.strokeDashoffset=MAX_DASH*(1-progress);
 }
 
 function adjustTime(sec){
   timerSeconds=Math.max(0,timerSeconds+sec);
   window._origTotal=timerSeconds>0?timerSeconds:60;
   displayTimer();
-  var origTotal=window._origTotal;
-  var elapsed=origTotal-timerSeconds;
-  var progress=elapsed/origTotal;
-  document.getElementById('circleProgress').style.strokeDashoffset=MAX_DASH*(1-progress);
 }
 
 function startTimer(){
@@ -234,13 +310,9 @@ function startTimer(){
     if(timerSeconds>0){
       timerSeconds--;
       displayTimer();
-      var origTotal=window._origTotal;
-      var elapsed=origTotal-timerSeconds;
-      var progress=elapsed/origTotal;
-      document.getElementById('circleProgress').style.strokeDashoffset=MAX_DASH*(1-progress);
     }else{
       pauseTimer();
-      document.getElementById('timeLabel').textContent='Время вышло';
+      document.getElementById('timeLabel').textContent='Финиш';
       document.getElementById('timeLabel').classList.add('finish');
     }
   },1000);
@@ -251,6 +323,110 @@ function pauseTimer(){
   clearInterval(timerInterval);
   document.getElementById('btnStart').classList.remove('active');
   document.getElementById('btnPause').classList.add('active');
+}
+
+function toggleWinnerMenu(){
+  winnerMenuOpen=!winnerMenuOpen;
+  document.getElementById('winnerOptions').classList.toggle('show',winnerMenuOpen);
+}
+
+function startRoulette(){
+  if(parts.size===0){alert('Нет участников!');return;}
+  var arr=Array.from(parts);
+  var winner=arr[Math.floor(Math.random()*arr.length)];
+  showWinner(winner);
+}
+
+function startQuickRoll(){
+  if(parts.size===0){alert('Нет участников!');return;}
+  var arr=Array.from(parts);
+  var winner=arr[Math.floor(Math.random()*arr.length)];
+  showWinner(winner);
+}
+
+function showWinner(name){
+  currentWinner=name;
+  winnerResponded=false;
+  winnerMessages=[];
+  document.getElementById('winnerName').textContent=name.toUpperCase();
+  document.getElementById('winnerScreen').classList.add('show');
+  document.getElementById('msgLeft').innerHTML='<h4>Сообщения слева</h4>';
+  document.getElementById('msgRight').innerHTML='<h4>Сообщения справа</h4>';
+  startStopwatch();
+  currentSession={winner:name.toUpperCase(),date:new Date().toLocaleDateString('ru-RU'),startTime:Date.now(),messages:[]};
+}
+
+function startStopwatch(){
+  stopwatchStartTime=Date.now();
+  stopwatchRunning=true;
+  document.getElementById('stopwatch').style.display='block';
+  document.getElementById('stopwatchMs').style.display='block';
+  document.getElementById('saveBtn').style.display='block';
+  stopwatchInterval=setInterval(updateStopwatch,50);
+}
+
+function updateStopwatch(){
+  if(!stopwatchRunning)return;
+  var elapsed=Date.now()-stopwatchStartTime;
+  var mins=Math.floor(elapsed/60000);
+  var secs=Math.floor((elapsed%60000)/1000);
+  var ms=Math.floor((elapsed%1000)/10);
+  document.getElementById('stopwatch').textContent=String(mins).padStart(2,'0')+':'+String(secs).padStart(2,'0');
+  document.getElementById('stopwatchMs').textContent='.'+String(ms).padStart(2,'0');
+}
+
+function stopStopwatch(){
+  stopwatchRunning=false;
+  clearInterval(stopwatchInterval);
+}
+
+function addWinnerMessage(user,msg){
+  var isWinner=user.toLowerCase()===currentWinner.toLowerCase();
+  var msgHtml='<div class="msg-item'+(isWinner?' highlight':'')+'"><span class="nick">'+esc(user)+':</span> '+esc(msg)+'</div>';
+  winnerMessages.push({user:user,msg:msg,isWinner:isWinner});
+  if(winnerMessages.length%2===0){
+    document.getElementById('msgRight').innerHTML+=msgHtml;
+  }else{
+    document.getElementById('msgLeft').innerHTML+=msgHtml;
+  }
+  if(isWinner&&!winnerResponded){
+    winnerResponded=true;
+    stopStopwatch();
+    if(currentSession)currentSession.endTime=Date.now();
+  }
+}
+
+function saveStatistics(){
+  if(!currentSession)return;
+  var elapsed=currentSession.endTime?currentSession.endTime-currentSession.startTime:Date.now()-currentSession.startTime;
+  var mins=Math.floor(elapsed/60000);
+  var secs=Math.floor((elapsed%60000)/1000);
+  currentSession.time=String(mins).padStart(2,'0')+':'+String(secs).padStart(2,'0');
+  currentSession.messages=winnerMessages;
+  statistics.unshift(currentSession);
+  localStorage.setItem('bib4ek_stats',JSON.stringify(statistics));
+  alert('Сохранено!');
+}
+
+function showStatistics(){
+  var list=document.getElementById('statList');
+  if(statistics.length===0){list.innerHTML='<div style="color:var(--muted);text-align:center;padding:20px">Пока пусто</div>';}
+  else{list.innerHTML=statistics.map(function(s){return'<div class="stat-item"><div class="date">'+s.date+'</div><div class="winner-name-stat">'+s.winner+'</div><div class="time-stat">Время: '+(s.time||'-')+'</div><div class="msgs-stat">Сообщений: '+(s.messages?s.messages.length:0)+'</div></div>';}).join('');}
+  document.getElementById('statsModal').classList.add('show');
+}
+
+function closeStats(){
+  document.getElementById('statsModal').classList.remove('show');
+}
+
+function closeWinnerScreen(){
+  document.getElementById('winnerScreen').classList.remove('show');
+  stopStopwatch();
+  document.getElementById('stopwatch').style.display='none';
+  document.getElementById('stopwatchMs').style.display='none';
+  document.getElementById('saveBtn').style.display='none';
+  currentWinner=null;
+  currentSession=null;
 }
 
 function connect(){
@@ -280,12 +456,25 @@ function connect(){
       parts.add(user);
       render();
     }
+    if(currentWinner&&!winnerResponded){
+      addWinnerMessage(user,msg);
+    }
   };
   sock.onclose=function(){setTimeout(connect,5000);};
 }
 
 var f=document.getElementById('twitch-chat-frame');
 f.src='https://www.twitch.tv/embed/'+CH+'/chat?parent='+encodeURIComponent(location.hostname||'localhost')+'&darkpopout';
+
+document.getElementById('stopwatch').style.display='none';
+document.getElementById('stopwatchMs').style.display='none';
+document.getElementById('saveBtn').style.display='none';
+document.getElementById('depLink').href='https://example.com/dep';
+document.getElementById('tgLink').href='https://t.me/example';
+
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape')closeWinnerScreen();
+});
 
 displayTimer();
 connect();
