@@ -101,31 +101,8 @@ iframe{width:100%;height:100%;display:block;border:0;background:var(--panel)}
 .wheel-controls .spin-btn:hover{filter:brightness(1.1)}
 .wheel-controls .spin-btn:disabled{opacity:.5;cursor:not-allowed}
 
-/* WINNER SCREEN */
-.winner-screen{display:none;position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,rgba(10,21,16,.97),rgba(22,38,29,.99));flex-direction:column;align-items:center;justify-content:center;animation:fadeIn .5s ease}
-.winner-screen.show{display:flex}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.winner-title{font-size:1rem;color:var(--muted);text-transform:uppercase;letter-spacing:4px;margin-bottom:16px}
-.winner-name{font-size:3.5rem;font-weight:900;color:var(--accent);text-shadow:0 0 40px rgba(74,222,128,.6);text-transform:uppercase;letter-spacing:2px;animation:pulse 1.5s infinite}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
-.stopwatch{position:fixed;top:20px;right:20px;font-size:2.8rem;font-weight:900;color:var(--accent);text-shadow:0 0 20px rgba(74,222,128,.5);font-variant-numeric:tabular-nums}
-.stopwatch.ms{font-size:1.5rem;color:var(--muted);margin-top:4px}
-.winner-messages{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:30px;max-width:700px;width:100%}
-.msg-box{flex:1;background:rgba(22,38,29,.9);border-radius:12px;padding:12px;border:1px solid rgba(74,222,128,.2);max-height:120px;overflow-y:auto}
-.msg-box h4{color:var(--accent);font-size:9px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
-.msg-item{padding:3px 0;border-bottom:1px solid rgba(74,222,128,.05);font-size:11px}
-.msg-item .nick{color:var(--accent);font-weight:700}
-.msg-item.highlight{background:rgba(74,222,128,.15);border-radius:4px;padding:3px 6px;margin:2px -6px}
-.winner-links{position:fixed;bottom:20px;left:20px;display:flex;flex-direction:column;gap:6px}
-.winner-link{padding:6px 14px;border-radius:8px;background:rgba(22,38,29,.9);color:var(--accent);font-size:10px;text-transform:uppercase;letter-spacing:1px;text-decoration:none;border:1px solid rgba(74,222,128,.2);transition:.2s}
-.winner-link:hover{background:rgba(74,222,128,.2);border-color:var(--accent)}
-.save-btn{position:fixed;top:20px;left:20px;padding:10px 20px;border-radius:10px;background:linear-gradient(180deg,var(--accent),#22c55e);color:#0f1e16;font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1px;cursor:pointer;border:none;box-shadow:0 4px 15px rgba(74,222,128,.4);transition:.25s}
-.save-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(74,222,128,.5)}
-.winner-chat-box{position:fixed;top:80px;left:20px;width:250px;background:rgba(22,38,29,.9);border-radius:12px;padding:12px;border:1px solid rgba(74,222,128,.2);max-height:200px;overflow-y:auto}
-.winner-chat-box h4{color:var(--accent);font-size:9px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
-.winner-chat-msg{padding:3px 0;border-bottom:1px solid rgba(74,222,128,.05);font-size:11px}
-.winner-chat-msg .nick{color:var(--accent);font-weight:700}
-.winner-chat-msg.highlight{background:rgba(74,222,128,.2);border-radius:4px;padding:3px 6px;margin:2px -6px;border-left:3px solid var(--accent)}
+
+
 .statistics-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);align-items:center;justify-content:center;z-index:10000}
 .statistics-modal.show{display:flex}
 .statistics-box{width:550px;max-width:90vw;max-height:80vh;background:var(--panel);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;box-shadow:0 14px 40px rgba(0,0,0,.6)}
@@ -135,6 +112,43 @@ iframe{width:100%;height:100%;display:block;border:0;background:var(--panel)}
 .stat-item .date{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:1px}
 .stat-item .name{color:var(--accent);font-weight:800;font-size:14px;margin:4px 0}
 .stat-item .time{color:var(--text);font-size:12px}
+
+/* WINNER SCREEN MODAL STYLES */
+.winner-modal-content{flex-direction:column;width:90%;height:90%;background:var(--bg);padding:30px;border:2px solid var(--accent);box-shadow:0 0 60px rgba(74,222,128,.3)}
+.close-x{position:absolute;right:20px;top:10px;font-size:30px;color:var(--accent);cursor:pointer;transition:.3s;z-index:10}
+.close-x:hover{transform:scale(1.2);text-shadow:0 0 15px var(--accent)}
+.win-header-block{display:flex;justify-content:space-between;align-items:center;gap:20px;transition:.5s}
+.win-header-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+#win-status-label{color:var(--accent);font-weight:800;letter-spacing:2px;font-size:13px;display:block;margin-bottom:4px;text-transform:uppercase}
+#win-nick{font-size:48px;margin:0;color:#fff;text-shadow:0 0 30px rgba(74,222,128,.5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+#win-nick.winner-responded{color:var(--accent);text-shadow:0 0 40px rgba(74,222,128,.8)}
+#win-status-label.winner-responded{color:var(--accent);text-shadow:0 0 20px rgba(74,222,128,.7)}
+#reroll-counter-display{color:var(--accent);font-size:14px;font-weight:bold;margin-top:6px}
+#win-timer-label{border:2px solid var(--accent);padding:10px 20px;border-radius:10px;color:var(--accent);font-size:24px;font-family:'Orbitron',monospace;flex-shrink:0;background:rgba(74,222,128,.05)}
+#win-timer-label.timer-responded{color:#22c55e;background:rgba(34,197,94,.2);border-color:#22c55e;box-shadow:0 0 25px rgba(34,197,94,.5)}
+.win-grid{display:grid;grid-template-columns:1fr 1fr 340px;gap:18px;flex-grow:1;margin-top:18px;overflow:hidden}
+.win-card{background:rgba(22,38,29,.8);border:1px solid rgba(74,222,128,.25);border-radius:16px;padding:18px;display:flex;flex-direction:column;overflow:hidden}
+.win-card h4{margin-top:0;color:var(--accent);font-size:12px;text-transform:uppercase;letter-spacing:1px}
+#win-chat-history{overflow-y:auto;flex-grow:1;font-size:12px}
+#win-chat-history div{padding:5px 0;border-bottom:1px solid rgba(74,222,128,.05)}
+#win-chat-history small{color:var(--muted)}
+.win-response-msg{background:rgba(74,222,128,.08) !important;border-left:3px solid var(--accent);border-radius:6px;padding:6px 10px !important;margin:4px 0 !important}
+.winner-timer-section{margin-top:12px}
+.winner-timer-section .timer-display{font-size:28px;padding:8px;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--accent);color:var(--accent);text-align:center;cursor:pointer}
+.timer-controls-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+.win-stats-row{display:flex;gap:15px;margin-bottom:10px}
+.win-stat-item{padding:8px 0}
+.win-stat-item small{color:var(--muted);font-size:10px;text-transform:uppercase}
+.editable-stat{font-size:18px;font-weight:bold;color:var(--accent);cursor:pointer;transition:.2s}
+.editable-stat:hover{text-shadow:0 0 10px var(--accent)}
+#win-drop-history{overflow-y:auto;flex-grow:1;font-size:11px}
+#win-drop-history .hist-row{display:flex;flex-direction:column;border-bottom:1px solid rgba(74,222,128,.05);padding:6px 0}
+.win-form{background:rgba(22,38,29,.6);border:1px solid rgba(74,222,128,.25);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:8px}
+.win-form h3{margin:0;color:var(--accent);font-size:13px;text-transform:uppercase;letter-spacing:1px;text-align:center}
+.win-form input{padding:8px;border-radius:8px;background:rgba(0,0,0,.3);border:1px solid rgba(74,222,128,.3);color:var(--text);font-size:13px;outline:none;transition:.2s}
+.win-form input:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(74,222,128,.1)}
+.win-form .pbtn{margin-top:6px}
+.win-form .reset{margin-top:4px}
 </style>
 </head>
 <body>
@@ -219,21 +233,53 @@ iframe{width:100%;height:100%;display:block;border:0;background:var(--panel)}
 </div>
 
 <!-- WINNER SCREEN -->
-<div class="winner-screen" id="winnerScreen">
-  <div class="winner-title">ПОБЕДИТЕЛЬ</div>
-  <div class="winner-name" id="winnerName">---</div>
-</div>
-<div class="stopwatch" id="stopwatch">00:00</div>
-<div class="stopwatch ms" id="stopwatchMs">.00</div>
-<button class="save-btn" id="saveBtn" onclick="saveStatistics()">Сохранить</button>
-<div class="winner-chat-box" id="winnerChatBox"><h4>Сообщения победителя</h4><div id="winnerChat"></div></div>
-<div class="winner-messages">
-  <div class="msg-box"><h4>Слева</h4><div id="msgLeft"></div></div>
-  <div class="msg-box"><h4>Справа</h4><div id="msgRight"></div></div>
-</div>
-<div class="winner-links">
-  <a class="winner-link" href="#" target="_blank">Депозит</a>
-  <a class="winner-link" href="#" target="_blank">Telegram</a>
+<div id="winner-screen" class="modal">
+  <div class="modal-content winner-modal-content">
+    <div class="close-x" onclick="closeWinnerScreen()">&times;</div>
+    <div class="win-header-block">
+      <div class="win-header-center">
+        <span id="win-status-label">WINNER FOUND</span>
+        <h2 id="win-nick">---</h2>
+        <div id="reroll-counter-display">Рероллов: 0</div>
+      </div>
+      <div id="win-timer-label">00:00:00</div>
+    </div>
+    <div class="win-grid">
+      <div class="win-card">
+        <h4>Сообщения в этом стриме:</h4>
+        <div id="win-chat-history"></div>
+        <div class="winner-timer-section">
+          <div id="winner-timer" class="timer-display" onclick="enableWinnerTimerEdit()">00:02:00</div>
+          <input type="text" id="winner-timer-input" style="display:none; width: 100%; box-sizing: border-box; background: #000; color: var(--accent); border: 1px solid var(--accent); font-size: 24px; text-align: center;">
+          <div class="timer-controls-grid">
+            <button class="timer-btn" onclick="adjustWinnerTimer(60)">+1:00</button>
+            <button class="timer-btn" onclick="adjustWinnerTimer(-60)">-1:00</button>
+            <button class="timer-btn" onclick="adjustWinnerTimer(30)">+0:30</button>
+            <button class="timer-btn" onclick="adjustWinnerTimer(-30)">-0:30</button>
+          </div>
+          <button class="timer-btn start-btn" onclick="toggleWinnerTimer()">СТАРТ / ПАУЗА</button>
+        </div>
+      </div>
+      <div id="win-stat-card" class="win-card">
+        <h4>История игрока (Global):</h4>
+        <div class="win-stats-row">
+          <div class="win-stat-item"><small>Выигрышей:</small> <div id="win-count-stat" class="editable-stat" onclick="editWinnerCounter('count')">0</div></div>
+          <div class="win-stat-item"><small>Всего вывел:</small> <div id="win-sum-stat" class="editable-stat" onclick="editWinnerCounter('sum')">0 ₽</div></div>
+        </div>
+        <div class="win-stat-item"><small>Всего депозитов:</small> <div id="win-dep-stat" class="editable-stat" onclick="editWinnerCounter('dep')">0 ₽</div></div>
+        <div id="win-drop-history"></div>
+      </div>
+      <div class="win-form">
+        <h3>Записать результат</h3>
+        <input type="number" id="win-amount-input" placeholder="Сумма вывода (RUB)">
+        <input type="number" id="win-deposit-input" placeholder="Сумма депозита (RUB)">
+        <input type="text" id="win-tg-input" placeholder="Telegram @username">
+        <button class="pbtn" onclick="saveWinnerStats()" style="margin-top:10px">СОХРАНИТЬ 📊</button>
+        <button class="reset" onclick="closeWinnerScreen()">ЗАКРЫТЬ</button>
+        <button class="reset" style="background:rgba(245,158,11,0.15);border-color:#f59e0b;color:#f59e0b;" onclick="reSpinToHome()">ПЕРЕКРУТИТЬ</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- STATISTICS MODAL -->
@@ -274,9 +320,6 @@ var isWheelSpinning=false;
 var currentRotation=0;
 var selectedSpinMode='elimination';
 var currentWinner=null;
-var stopwatchInterval=null;
-var stopwatchStartTime=null;
-var stopwatchRunning=false;
 var winnerResponded=false;
 var winnerMessages=[];
 var statistics=JSON.parse(localStorage.getItem('bib4ek_stats')||'[]');
@@ -284,10 +327,6 @@ var currentSession=null;
 var wheelColors=['#1e2937','#334155','#475569','#64748b','#1e3a8a','#312e81','#4338ca','#4c1d95','#6b21a8','#0f766e'];
 
 document.getElementById('code').value=code;
-document.getElementById('stopwatch').style.display='none';
-document.getElementById('stopwatchMs').style.display='none';
-document.getElementById('saveBtn').style.display='none';
-document.getElementById('winnerChatBox').style.display='none';
 
 function saveCode(){code=document.getElementById('code').value.trim()||'+';localStorage.setItem('bib4ek_code',code);}
 function resetParts(){parts.clear();render();renderModal();}
@@ -384,23 +423,175 @@ function getRandomParticipant(){return wheelParticipants[Math.floor(Math.random(
 
 function startQuickRoll(){if(parts.size===0){alert('Нет участников!');return;}var arr=Array.from(parts);showWinner(arr[Math.floor(Math.random()*arr.length)]);}
 
-function showWinner(name){currentWinner=name;winnerResponded=false;winnerMessages=[];document.getElementById('winnerName').textContent=name.toUpperCase();document.getElementById('winnerScreen').classList.add('show');document.getElementById('winnerChat').innerHTML='';document.getElementById('msgLeft').innerHTML='';document.getElementById('msgRight').innerHTML='';document.getElementById('winnerChatBox').style.display='block';startStopwatch();currentSession={winner:name.toUpperCase(),date:new Date().toLocaleDateString('ru-RU'),startTime:Date.now(),messages:[]};}
+// WINNER SCREEN VARIABLES (from eneeergyshow mechanics)
+var winTimerActive=false;
+var winnerTimerSeconds=120,winnerTimerRunning=false;
+var winnerHistory=JSON.parse(localStorage.getItem('bib4ek_winner_history')||'{}');
+var userMessages={};
+var rerollCount=0;
 
-function startStopwatch(){stopwatchStartTime=Date.now();stopwatchRunning=true;document.getElementById('stopwatch').style.display='block';document.getElementById('stopwatchMs').style.display='block';document.getElementById('saveBtn').style.display='block';stopwatchInterval=setInterval(updateStopwatch,50);}
+function showWinner(name){
+  closeModals();
+  currentWinner=name;
+  winTimerActive=true;
+  winnerResponded=false;
+  winnerMessages=[];
+  var winNick=document.getElementById('win-nick');
+  var timerLabel=document.getElementById('win-timer-label');
+  var statusLabel=document.getElementById('win-status-label');
+  winNick.classList.remove('winner-responded');
+  timerLabel.classList.remove('timer-responded');
+  timerLabel.innerText='00:00:00';
+  updateWinnerTimerDisplay();
+  statusLabel.classList.remove('winner-responded');
+  statusLabel.style.color='var(--accent)';
+  statusLabel.innerText='WINNER FOUND';
+  winNick.innerText=name;
+  document.getElementById('reroll-counter-display').innerText='Рероллов: '+rerollCount;
+  var userHistory=winnerHistory[name.toLowerCase()]||[];
+  var totalWon=userHistory.reduce(function(s,h){return s+(h.amount||0)},0);
+  var totalDep=userHistory.reduce(function(s,h){return s+(h.deposit||0)},0);
+  document.getElementById('win-count-stat').innerText=userHistory.length;
+  document.getElementById('win-sum-stat').innerText=totalWon.toLocaleString()+' ₽';
+  document.getElementById('win-dep-stat').innerText=totalDep.toLocaleString()+' ₽';
+  renderWinnerHistory(name);
+  document.getElementById('win-amount-input').value='';
+  document.getElementById('win-deposit-input').value='';
+  document.getElementById('win-tg-input').value='';
+  document.getElementById('winner-screen').classList.add('open');
+  var hCont=document.getElementById('win-chat-history');
+  hCont.innerHTML=(userMessages[name]||[]).map(function(m){return'<div style="padding:5px 0;border-bottom:1px solid rgba(74,222,128,.05);font-size:12px;"><small style="color:var(--muted);">'+m.time+'</small> '+esc(m.text)+'</div>';}).reverse().join('');
+  var s=0;
+  clearInterval(window.winInt);
+  window.winInt=setInterval(function(){
+    if(winTimerActive){
+      s++;
+      var sec=s%60,min=Math.floor(s/60),hr=Math.floor(min/60);
+      document.getElementById('win-timer-label').innerText=hr.toString().padStart(2,'0')+':'+min.toString().padStart(2,'0')+':'+sec.toString().padStart(2,'0');
+    }
+  },1000);
+  currentSession={winner:name.toUpperCase(),date:new Date().toLocaleDateString('ru-RU'),startTime:Date.now(),messages:[]};
+}
 
-function updateStopwatch(){if(!stopwatchRunning)return;var elapsed=Date.now()-stopwatchStartTime;var mins=Math.floor(elapsed/60000);var secs=Math.floor((elapsed%60000)/1000);var ms=Math.floor((elapsed%1000)/10);document.getElementById('stopwatch').textContent=String(mins).padStart(2,'0')+':'+String(secs).padStart(2,'0');document.getElementById('stopwatchMs').textContent='.'+String(ms).padStart(2,'0');}
+function renderWinnerHistory(name){
+  var cont=document.getElementById('win-drop-history');
+  if(!cont||!name)return;
+  var hist=winnerHistory[name.toLowerCase()]||[];
+  cont.innerHTML=hist.slice().reverse().map(function(h){
+    if(h.isReroll)return'<div class="hist-row"><span style="color:#f59e0b;font-weight:bold;">🔄 БЫЛ РЕРОЛЬНУТ</span></div>';
+    return'<div class="hist-row"><div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span style="color:var(--muted);font-size:10px;">📅 '+h.date+'</span><span style="color:#fff;font-weight:bold;">'+(h.site||'---')+'</span></div><div style="display:flex;justify-content:space-between;"><span style="color:var(--accent);font-weight:bold;">Вывод: '+(h.amount||0).toLocaleString()+' ₽</span><span style="color:#fff;font-weight:bold;">Деп: '+(h.deposit||0).toLocaleString()+' ₽</span></div></div>';
+  }).join('')||'<div style="color:var(--muted);text-align:center;margin-top:20px;">Первая победа!</div>';
+}
 
-function stopStopwatch(){stopwatchRunning=false;clearInterval(stopwatchInterval);}
+function saveWinnerStats(){
+  var amt=parseFloat(document.getElementById('win-amount-input').value)||0;
+  var dep=parseFloat(document.getElementById('win-deposit-input').value)||0;
+  var tg=document.getElementById('win-tg-input').value.trim();
+  if(amt>0||dep>0){
+    var key=currentWinner.toLowerCase();
+    if(!winnerHistory[key])winnerHistory[key]=[];
+    winnerHistory[key].push({amount:amt,deposit:dep,tg:tg,site:'---',date:new Date().toLocaleDateString('ru-RU')+' '+new Date().toLocaleTimeString('ru-RU')});
+    try{localStorage.setItem('bib4ek_winner_history',JSON.stringify(winnerHistory));}catch(e){}
+  }
+  if(currentSession){
+    var elapsed=Date.now()-currentSession.startTime;
+    var mins=Math.floor(elapsed/60000);
+    var secs=Math.floor((elapsed%60000)/1000);
+    currentSession.time=String(mins).padStart(2,'0')+':'+String(secs).padStart(2,'0');
+    currentSession.messages=winnerMessages;
+    statistics.unshift(currentSession);
+    localStorage.setItem('bib4ek_stats',JSON.stringify(statistics));
+  }
+  alert('Сохранено!');
+  closeWinnerScreen();
+}
 
-function addWinnerMessage(user,msg){var isWinner=user.toLowerCase()===currentWinner.toLowerCase();var msgHtml='<div class="msg-item'+(isWinner?' highlight':'')+'"><span class="nick">'+esc(user)+':</span> '+esc(msg)+'</div>';winnerMessages.push({user:user,msg:msg,isWinner:isWinner});if(winnerMessages.length%2===0){document.getElementById('msgRight').innerHTML+=msgHtml;}else{document.getElementById('msgLeft').innerHTML+=msgHtml;}if(isWinner){var chatHtml='<div class="winner-chat-msg highlight"><span class="nick">'+esc(user)+':</span> '+esc(msg)+'</div>';document.getElementById('winnerChat').innerHTML+=chatHtml;}if(isWinner&&!winnerResponded){winnerResponded=true;stopStopwatch();if(currentSession)currentSession.endTime=Date.now();}}
+function reSpinToHome(){
+  rerollCount++;
+  if(currentWinner){
+    var key=currentWinner.toLowerCase();
+    if(!winnerHistory[key])winnerHistory[key]=[];
+    winnerHistory[key].push({amount:0,deposit:0,tg:'',site:'---',date:new Date().toLocaleDateString('ru-RU'),isReroll:true});
+    try{localStorage.setItem('bib4ek_winner_history',JSON.stringify(winnerHistory));}catch(e){}
+  }
+  var arr=Array.from(parts);
+  if(arr.length===0){closeWinnerScreen();return;}
+  showWinner(arr[Math.floor(Math.random()*arr.length)]);
+}
 
-function saveStatistics(){if(!currentSession)return;var elapsed=currentSession.endTime?currentSession.endTime-currentSession.startTime:Date.now()-currentSession.startTime;var mins=Math.floor(elapsed/60000);var secs=Math.floor((elapsed%60000)/1000);currentSession.time=String(mins).padStart(2,'0')+':'+String(secs).padStart(2,'0');currentSession.messages=winnerMessages;statistics.unshift(currentSession);localStorage.setItem('bib4ek_stats',JSON.stringify(statistics));alert('Сохранено!');}
+function editWinnerCounter(type){
+  if(!currentWinner)return;
+  var val=prompt('Введите новое значение:');
+  if(val===null)return;
+  if(type==='count')document.getElementById('win-count-stat').innerText=val;
+  if(type==='sum')document.getElementById('win-sum-stat').innerText=parseInt(val).toLocaleString()+' ₽';
+  if(type==='dep')document.getElementById('win-dep-stat').innerText=parseInt(val).toLocaleString()+' ₽';
+}
 
-function closeWinnerScreen(){document.getElementById('winnerScreen').classList.remove('show');stopStopwatch();document.getElementById('stopwatch').style.display='none';document.getElementById('stopwatchMs').style.display='none';document.getElementById('saveBtn').style.display='none';document.getElementById('winnerChatBox').style.display='none';currentWinner=null;currentSession=null;}
+function updateWinnerTimerDisplay(){
+  var h=Math.floor(winnerTimerSeconds/3600).toString().padStart(2,'0');
+  var m=Math.floor((winnerTimerSeconds%3600)/60).toString().padStart(2,'0');
+  var s=(winnerTimerSeconds%60).toString().padStart(2,'0');
+  var wt=document.getElementById('winner-timer');
+  if(wt)wt.innerText=h+':'+m+':'+s;
+}
+
+function adjustWinnerTimer(delta){
+  winnerTimerSeconds=Math.max(0,winnerTimerSeconds+delta);
+  updateWinnerTimerDisplay();
+}
+
+function toggleWinnerTimer(){
+  winnerTimerRunning=!winnerTimerRunning;
+  if(winnerTimerRunning){
+    clearInterval(window.winTimerInt);
+    window.winTimerInt=setInterval(function(){
+      if(winnerTimerRunning&&winnerTimerSeconds>0){
+        winnerTimerSeconds--;
+        updateWinnerTimerDisplay();
+      }
+    },1000);
+  }else{
+    clearInterval(window.winTimerInt);
+  }
+}
+
+function enableWinnerTimerEdit(){
+  winnerTimerRunning=false;
+  clearInterval(window.winTimerInt);
+  var d=document.getElementById('winner-timer');
+  var i=document.getElementById('winner-timer-input');
+  d.style.display='none';
+  i.style.display='block';
+  i.value=d.innerText;
+  i.focus();
+  i.onblur=function(){
+    var p=i.value.split(':').map(Number).reverse();
+    winnerTimerSeconds=(p[0]||0)+(p[1]||0)*60+(p[2]||0)*3600;
+    updateWinnerTimerDisplay();
+    i.style.display='none';
+    d.style.display='block';
+  };
+}
+
+function closeWinnerScreen(){
+  document.getElementById('winner-screen').classList.remove('open');
+  winTimerActive=false;
+  clearInterval(window.winInt);
+  currentWinner=null;
+  currentSession=null;
+}
 
 function closeStats(){document.getElementById('statsModal').classList.remove('show');}
 
-document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeWinnerScreen();closeWheel();}});
+function closeModals(){
+  document.querySelectorAll('.modal').forEach(function(m){m.classList.remove('open');});
+  document.getElementById('winner-screen').classList.remove('open');
+  winTimerActive=false;
+  clearInterval(window.winInt);
+}
+
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeModals();closeWheel();}});
 
 function connect(){if(sock)try{sock.close()}catch(e){}
 sock=new WebSocket('wss://irc-ws.chat.twitch.tv:443');
@@ -409,7 +600,36 @@ sock.onmessage=function(ev){var d=ev.data;if(d.indexOf('PING')===0){sock.send('P
 var mk='PRIVMSG #'+CH+' :';if(d.indexOf(mk)<0)return;var user,msg;
 if(d.charAt(0)==='@'){var p=d.split(' ');user=p[1].split('!')[0].substring(1);msg=d.split(mk)[1].trim();}else{user=d.split('!')[0].substring(1);msg=d.split(mk)[1].trim();}
 if(msg.trim().toLowerCase()===code.toLowerCase()&&!parts.has(user)){parts.add(user);render();}
-if(currentWinner&&!winnerResponded){addWinnerMessage(user,msg);}};
+var time=new Date().toLocaleTimeString();
+if(!userMessages[user])userMessages[user]=[];
+userMessages[user].push({time:time,text:msg});
+if(currentWinner&&user.toLowerCase()===currentWinner.toLowerCase()){
+  if(winTimerActive){
+    winTimerActive=false;
+    var timerLabel=document.getElementById('win-timer-label');
+    var statusLabel=document.getElementById('win-status-label');
+    var nick=document.getElementById('win-nick');
+    timerLabel.classList.add('timer-responded');
+    statusLabel.innerText='WINNER RESPONDED!';
+    statusLabel.classList.add('winner-responded');
+    nick.classList.add('winner-responded');
+  }
+  var winnerScreen=document.getElementById('winner-screen');
+  if(winnerScreen&&winnerScreen.classList.contains('open')){
+    var history=document.getElementById('win-chat-history');
+    if(history){
+      var newMsg=document.createElement('div');
+      newMsg.className='win-response-msg';
+      newMsg.innerHTML='<small style="color:var(--muted);">'+time+'</small> '+esc(msg);
+      history.insertBefore(newMsg,history.firstChild);
+      history.scrollTop=0;
+    }
+  }
+  winnerResponded=true;
+  if(currentSession)currentSession.endTime=Date.now();
+}
+winnerMessages.push({user:user,msg:msg,isWinner:currentWinner&&user.toLowerCase()===currentWinner.toLowerCase()});
+};
 sock.onclose=function(){setTimeout(connect,5000);};
 }
 
