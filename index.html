@@ -1,0 +1,78 @@
+<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Twitch Chat - bib4ek</title><style>
+:root{--bg:#0f1e16;--panel:#16261d;--accent:#4ade80;--accent-soft:rgba(74,222,128,.06);--text:#e8f5ec;--muted:#9fbfa9}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:linear-gradient(160deg,#0a1510,#16261d 60%,#1b2f23);color:var(--text);font-family:'Proxima Nova Cond','Proxima Nova Condensed','ProximaNovaCond-Black',Oswald,'Arial Narrow',Arial,sans-serif}
+.app{display:flex;height:100vh;gap:18px;padding:22px;align-items:center;justify-content:center}
+.side{width:280px;height:520px;display:flex;flex-direction:column;gap:12px;background:var(--panel);border-radius:16px;padding:16px;box-shadow:0 10px 34px rgba(0,0,0,.35)}
+.side label{color:var(--accent);font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.side label::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent)}
+.side input{width:100%;padding:4px;border-radius:6px;background:rgba(0,0,0,.22);color:var(--text);font-size:11px;text-align:center;font-weight:700;outline:none;transition:.2s}
+.side input:focus{box-shadow:0 0 0 2px rgba(74,222,128,.1)}
+.pbtn{width:100%;padding:10px;border-radius:10px;background:var(--accent-soft);color:var(--accent);font-weight:800;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:.2s;text-align:center}
+.pbtn .num{display:block;font-size:42px;font-weight:900;line-height:1.15;letter-spacing:0}
+.pbtn:hover{background:var(--accent);color:#0f1e16}
+.reset{width:100%;padding:9px;border-radius:10px;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:.2s}
+.reset:hover{background:var(--accent);color:#0f1e16}
+.frame-wrap{width:420px;height:520px;border-radius:16px;overflow:hidden;background:var(--panel);box-shadow:0 10px 34px rgba(0,0,0,.35)}
+iframe{width:100%;height:100%;display:block;border:0;background:var(--panel)}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);align-items:center;justify-content:center;z-index:1000}
+.modal.open{display:flex}
+.tablebox{width:420px;max-width:92vw;max-height:80vh;background:var(--panel);border-radius:16px;padding:18px;box-shadow:0 14px 40px rgba(0,0,0,.55);display:flex;flex-direction:column;gap:12px}
+.tablebox h3{margin:0;color:var(--accent);font-size:14px;letter-spacing:1.5px;text-transform:uppercase;text-align:center}
+.search{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(74,222,128,.2);background:rgba(0,0,0,.2);color:var(--text);font-size:13px;outline:none;transition:.2s}
+.search:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(74,222,128,.1)}
+.code-row{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.15);border-radius:8px;padding:6px 10px}
+.code-row label{color:var(--accent);font-size:11px;font-weight:700;text-transform:uppercase;white-space:nowrap}
+.code-row input{flex:1;padding:4px;border:none;background:transparent;color:var(--text);font-size:14px;font-weight:800;text-align:center;outline:none}
+.tb-list{flex:1;min-height:0;overflow-y:auto;background:rgba(0,0,0,.15);border-radius:10px;padding:8px}
+.tb-list::-webkit-scrollbar{width:5px}.tb-list::-webkit-scrollbar-thumb{background:var(--accent);border-radius:8px}
+.p{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-bottom:1px solid rgba(74,222,128,.05);font-size:13px}
+.p b{color:var(--accent)}
+.del{padding:3px 9px;border-radius:6px;border:none;background:rgba(239,68,68,.15);color:#f87171;font-weight:700;font-size:11px;cursor:pointer;transition:.2s}
+.del:hover{background:#f87171;color:#fff}
+.close{width:100%;padding:9px;border-radius:10px;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:.2s}
+.close:hover{background:var(--accent);color:#0f1e16}
+@media(max-width:780px){.app{flex-direction:column}.side{width:420px}}
+</style><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet"></head><body>
+<div class="app">
+  <div class="side">
+    <button class="pbtn" onclick="openModal()">УЧАСТНИКИ<span class="num" id="cnt">0</span></button>
+    <button class="reset" onclick="resetParts()">Сброс участников</button>
+  </div>
+  <div class="frame-wrap"><iframe id="twitch-chat-frame" title="Twitch chat for bib4ek" loading="lazy" allow="clipboard-write"></iframe></div>
+</div>
+<div class="modal" id="modal">
+  <div class="tablebox">
+    <h3>УЧАСТНИКИ: <span id="cnt2">0</span></h3>
+    <div class="code-row">
+      <label>Код</label>
+      <input id="code" value="+" oninput="saveCode()">
+    </div>
+    <input class="search" id="search" placeholder="Поиск по нику..." oninput="renderModal()">
+    <div class="tb-list" id="tb-list"></div>
+    <button class="close" onclick="closeModal()">Закрыть</button>
+  </div>
+</div>
+<script>
+var CH='bib4ek',code=localStorage.getItem('bib4ek_code')||'+',parts=new Set(JSON.parse(localStorage.getItem('bib4ek_parts')||'[]')),sock=null;
+document.getElementById('code').value=code;
+function saveCode(){code=document.getElementById('code').value.trim()||'+';localStorage.setItem('bib4ek_code',code);}
+function resetParts(){parts.clear();render();}
+function openModal(){renderModal();document.getElementById('modal').classList.add('open');}
+function closeModal(){document.getElementById('modal').classList.remove('open');}
+function removePart(n){parts.delete(n);render();renderModal();}
+function renderModal(){var q=document.getElementById('search').value.trim().toLowerCase(),arr=Array.from(parts).filter(function(p){return!q||p.toLowerCase().indexOf(q)>=0}),l=document.getElementById('tb-list'),i=0;l.innerHTML=arr.map(function(p){return'<div class="p"><span>'+esc(p)+'</span><b>+'+ ++i +'</b><button class="del" data-n="'+esc(p)+'">✕</button></div>';}).join('')||'<div style="color:var(--muted);text-align:center;padding:20px">Пока пусто</div>';document.getElementById('cnt2').textContent=parts.size;}
+document.getElementById('tb-list').onclick=function(e){if(e.target&&e.target.classList.contains('del'))removePart(e.target.getAttribute('data-n'));};
+function render(){document.getElementById('cnt').textContent=parts.size;localStorage.setItem('bib4ek_parts',JSON.stringify(Array.from(parts)));}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function connect(){if(sock)try{sock.close()}catch(e){}
+sock=new WebSocket('wss://irc-ws.chat.twitch.tv:443');
+sock.onopen=function(){sock.send('CAP REQ :twitch.tv/tags');sock.send('PASS SCHMOOPIIE');sock.send('NICK justinfan123');sock.send('JOIN #'+CH);};
+sock.onmessage=function(ev){var d=ev.data;if(d.indexOf('PING')===0){sock.send('PONG :tmi.twitch.tv');return;}
+var mk='PRIVMSG #'+CH+' :';if(d.indexOf(mk)<0)return;var user,msg;
+if(d.charAt(0)==='@'){var p=d.split(' ');user=p[1].split('!')[0].substring(1);msg=d.split(mk)[1].trim();}else{user=d.split('!')[0].substring(1);msg=d.split(mk)[1].trim();}
+if(msg.trim().toLowerCase()===code.toLowerCase()&&!parts.has(user)){parts.add(user);render();}};
+sock.onclose=function(){setTimeout(connect,5000);};}
+var f=document.getElementById('twitch-chat-frame');f.src='https://www.twitch.tv/embed/'+CH+'/chat?parent='+encodeURIComponent(location.hostname||'localhost')+'&darkpopout';
+connect();render();
+</script>
+</body></html>
