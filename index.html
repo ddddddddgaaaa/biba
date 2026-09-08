@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Twitch Chat - bib4ek</title>
+<title>Бот для прокачек bib4ek</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0f1e16;--panel:#16261d;--accent:#4ade80;--accent-soft:rgba(74,222,128,.06);--text:#e8f5ec;--muted:#9fbfa9}
@@ -553,7 +553,6 @@ function saveWinnerStats(){
     statistics.unshift(currentSession);
     localStorage.setItem('bib4ek_stats',JSON.stringify(statistics));
   }
-  alert('Сохранено!');
   closeWinnerScreen();
 }
 
