@@ -9,7 +9,7 @@
 html,body{margin:0;height:100%;padding:0;background:#0a1510;color:var(--text);font-family:'Proxima Nova Cond','Proxima Nova Condensed','ProximaNovaCond-Black',Oswald,'Arial Narrow',Arial,sans-serif}
 #bgvid{position:fixed;top:0;left:0;width:100vw;height:100vh;object-fit:cover;z-index:0;opacity:.4;pointer-events:none}
 .app{position:relative;z-index:1;display:flex;height:100vh;gap:18px;padding:22px;align-items:flex-start;justify-content:center}
-.side{width:340px;height:170px;display:flex;flex-direction:column;gap:12px;background:var(--panel);border-radius:16px;padding:16px;box-shadow:0 10px 34px rgba(0,0,0,.35)}
+.side{width:340px;min-height:170px;display:flex;flex-direction:column;gap:12px;background:var(--panel);border-radius:16px;padding:16px;box-shadow:0 10px 34px rgba(0,0,0,.35);overflow:visible}
 .side label{color:var(--accent);font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;display:flex;align-items:center;gap:8px}
 .side label::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent)}
 .side input{width:100%;padding:4px;border-radius:6px;background:rgba(0,0,0,.22);color:var(--text);font-size:11px;text-align:center;font-weight:700;outline:none;transition:.2s}
@@ -59,15 +59,15 @@ iframe{width:100%;height:100%;display:block;border:0;background:var(--panel)}
 .time-numbers{font-size:2.2rem;font-weight:900;letter-spacing:2px;color:var(--accent);text-shadow:0 0 20px rgba(74,222,128,.4)}
 .time-label{font-size:0.65rem;text-transform:uppercase;letter-spacing:3px;color:var(--muted);margin-top:6px}
 .time-label.finish{color:#f87171;text-shadow:0 0 10px rgba(239,68,68,.5)}
-.timer-controls{display:flex;gap:8px;flex-wrap:wrap;max-width:200px;justify-content:center}
-.timer-btn{padding:10px 16px;border-radius:10px;background:linear-gradient(180deg,rgba(74,222,128,.08),rgba(74,222,128,.03));color:var(--accent);font-weight:700;font-size:13px;cursor:pointer;transition:.25s;border:1px solid rgba(74,222,128,.25);min-width:50px;text-align:center;text-transform:uppercase;letter-spacing:.5px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.timer-controls{display:flex;flex-direction:column;gap:8px;align-items:center}
+.timer-btn{padding:12px 20px;border-radius:12px;background:linear-gradient(180deg,rgba(74,222,128,.08),rgba(74,222,128,.03));color:var(--accent);font-weight:700;font-size:13px;cursor:pointer;transition:.25s;border:1px solid rgba(74,222,128,.25);min-width:55px;text-align:center;text-transform:uppercase;letter-spacing:.5px;box-shadow:0 3px 10px rgba(0,0,0,.25),inset 0 1px 0 rgba(74,222,128,.1)}.timer-row{display:flex;gap:8px}.timer-btn.start-btn{padding:14px 32px;font-size:13px;letter-spacing:1px}
 .timer-btn:hover{background:linear-gradient(180deg,var(--accent),#22c55e);color:#0f1e16;border-color:var(--accent);box-shadow:0 4px 15px rgba(74,222,128,.4);transform:translateY(-2px)}
 .timer-btn:active{transform:translateY(0)}
 .timer-btn.active{background:linear-gradient(180deg,var(--accent),#22c55e);color:#0f1e16;border-color:var(--accent);box-shadow:0 0 20px rgba(74,222,128,.5)}
 .winner-btn{width:100%;padding:10px;border-radius:10px;background:linear-gradient(180deg,rgba(74,222,128,.15),rgba(74,222,128,.05));color:var(--accent);font-weight:800;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:.25s;border:1px solid rgba(74,222,128,.3);margin-top:4px}
 .winner-btn:hover{background:linear-gradient(180deg,var(--accent),#22c55e);color:#0f1e16;border-color:var(--accent);box-shadow:0 4px 15px rgba(74,222,128,.4)}
 .winner-options{display:flex;flex-direction:column;gap:6px;margin-top:6px;max-height:0;overflow:hidden;transition:max-height .3s ease,opacity .3s ease;opacity:0}
-.winner-options.show{max-height:100px;opacity:1}
+.winner-options.show{max-height:200px;opacity:1;margin-top:8px}
 .winner-opt{padding:10px;border-radius:8px;background:rgba(22,38,29,.9);color:var(--accent);font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:.2s;border:1px solid rgba(74,222,128,.2);text-align:center}
 .winner-opt:hover{background:rgba(74,222,128,.2);border-color:var(--accent)}
 .winner-screen{display:none;position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,rgba(10,21,16,.97),rgba(22,38,29,.99));flex-direction:column;align-items:center;justify-content:center;animation:fadeIn .5s ease}
@@ -141,12 +141,7 @@ iframe{width:100%;height:100%;display:block;border:0;background:var(--panel)}
         <span class="time-label" id="timeLabel">Осталось</span>
       </div>
     </div>
-    <div class="timer-controls">
-      <button class="timer-btn" onclick="adjustTime(60)">+1</button>
- <button class="timer-btn" onclick="adjustTime(-60)">-1</button>
-      <button class="timer-btn" id="btnStart" onclick="startTimer()">Старт</button>
-      <button class="timer-btn" id="btnPause" onclick="pauseTimer()">Пауза</button>
-    </div>
+    <div class="timer-controls"><div class="timer-row"><button class="timer-btn" onclick="adjustTime(60)">+1</button><button class="timer-btn" onclick="adjustTime(-60)">-1</button></div><div class="timer-row"><button class="timer-btn start-btn" id="btnStart" onclick="startTimer()">Старт</button><button class="timer-btn start-btn" id="btnPause" onclick="pauseTimer()">Пауза</button></div></div>
   </div>
 </div>
 
