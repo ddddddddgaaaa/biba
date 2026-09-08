@@ -2,7 +2,7 @@
 :root{--bg:#0f1e16;--panel:#16261d;--accent:#4ade80;--accent-soft:rgba(74,222,128,.06);--text:#e8f5ec;--muted:#9fbfa9}
 *{box-sizing:border-box}html,body{margin:0;height:100%;background:linear-gradient(160deg,#0a1510,#16261d 60%,#1b2f23);color:var(--text);font-family:'Proxima Nova Cond','Proxima Nova Condensed','ProximaNovaCond-Black',Oswald,'Arial Narrow',Arial,sans-serif}
 .app{display:flex;height:100vh;gap:18px;padding:22px;align-items:center;justify-content:center}
-.side{width:280px;height:520px;display:flex;flex-direction:column;gap:12px;background:var(--panel);border-radius:16px;padding:16px;box-shadow:0 10px 34px rgba(0,0,0,.35)}
+.side{width:340px;height:640px;display:flex;flex-direction:column;gap:12px;background:var(--panel);border-radius:16px;padding:16px;box-shadow:0 10px 34px rgba(0,0,0,.35)}
 .side label{color:var(--accent);font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;display:flex;align-items:center;gap:8px}
 .side label::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent)}
 .side input{width:100%;padding:4px;border-radius:6px;background:rgba(0,0,0,.22);color:var(--text);font-size:11px;text-align:center;font-weight:700;outline:none;transition:.2s}
@@ -16,7 +16,7 @@
 iframe{width:100%;height:100%;display:block;border:0;background:var(--panel)}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);align-items:center;justify-content:center;z-index:1000}
 .modal.open{display:flex}
-.tablebox{width:420px;max-width:92vw;max-height:80vh;background:var(--panel);border-radius:16px;padding:18px;box-shadow:0 14px 40px rgba(0,0,0,.55);display:flex;flex-direction:column;gap:12px}
+.tablebox{width:500px;max-width:92vw;max-height:80vh;background:var(--panel);border-radius:16px;padding:18px;box-shadow:0 14px 40px rgba(0,0,0,.55);display:flex;flex-direction:column;gap:12px}
 .tablebox h3{margin:0;color:var(--accent);font-size:14px;letter-spacing:1.5px;text-transform:uppercase;text-align:center}
 .search{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(74,222,128,.2);background:rgba(0,0,0,.2);color:var(--text);font-size:13px;outline:none;transition:.2s}
 .search:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(74,222,128,.1)}
@@ -31,8 +31,13 @@ iframe{width:100%;height:100%;display:block;border:0;background:var(--panel)}
 .del:hover{background:#f87171;color:#fff}
 .close{width:100%;padding:9px;border-radius:10px;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:.2s}
 .close:hover{background:var(--accent);color:#0f1e16}
-@media(max-width:780px){.app{flex-direction:column}.side{width:420px}}
+#bgvid{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:-1;opacity:.25}
+.vid-btn{position:fixed;bottom:16px;right:16px;padding:8px 14px;border-radius:8px;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:.2s;z-index:10;border:none}
+.vid-btn:hover{background:var(--accent);color:#0f1e16}
+@media(max-width:900px){.app{flex-direction:column}.side{width:540px}}
 </style><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet"></head><body>
+<video id="bgvid" autoplay muted loop><source src="biba1.mp4" type="video/mp4"></video>
+<button class="vid-btn" onclick="switchVid()">Видео 1</button>
 <div class="app">
   <div class="side">
     <button class="pbtn" onclick="openModal()">УЧАСТНИКИ<span class="num" id="cnt">0</span></button>
@@ -60,7 +65,7 @@ function resetParts(){parts.clear();render();}
 function openModal(){renderModal();document.getElementById('modal').classList.add('open');}
 function closeModal(){document.getElementById('modal').classList.remove('open');}
 function removePart(n){parts.delete(n);render();renderModal();}
-function renderModal(){var q=document.getElementById('search').value.trim().toLowerCase(),arr=Array.from(parts).filter(function(p){return!q||p.toLowerCase().indexOf(q)>=0}),l=document.getElementById('tb-list'),i=0;l.innerHTML=arr.map(function(p){return'<div class="p"><span>'+esc(p)+'</span><b>+'+ ++i +'</b><button class="del" data-n="'+esc(p)+'">✕</button></div>';}).join('')||'<div style="color:var(--muted);text-align:center;padding:20px">Пока пусто</div>';document.getElementById('cnt2').textContent=parts.size;}
+function renderModal(){var q=document.getElementById('search').value.trim().toLowerCase(),arr=Array.from(parts).filter(function(p){return!q||p.toLowerCase().indexOf(q)>=0}),l=document.getElementById('tb-list');l.innerHTML=arr.map(function(p){return'<div class="p"><span>'+esc(p)+'</span><button class="del" data-n="'+esc(p)+'">✕</button></div>';}).join('')||'<div style="color:var(--muted);text-align:center;padding:20px">Пока пусто</div>';document.getElementById('cnt2').textContent=parts.size;}
 document.getElementById('tb-list').onclick=function(e){if(e.target&&e.target.classList.contains('del'))removePart(e.target.getAttribute('data-n'));};
 function render(){document.getElementById('cnt').textContent=parts.size;localStorage.setItem('bib4ek_parts',JSON.stringify(Array.from(parts)));}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
@@ -73,6 +78,8 @@ if(d.charAt(0)==='@'){var p=d.split(' ');user=p[1].split('!')[0].substring(1);ms
 if(msg.trim().toLowerCase()===code.toLowerCase()&&!parts.has(user)){parts.add(user);render();}};
 sock.onclose=function(){setTimeout(connect,5000);};}
 var f=document.getElementById('twitch-chat-frame');f.src='https://www.twitch.tv/embed/'+CH+'/chat?parent='+encodeURIComponent(location.hostname||'localhost')+'&darkpopout';
+var vids=['biba1.mp4','biba2.mp4','biba3.mp4'],vidx=0;
+function switchVid(){vidx=(vidx+1)%3;var v=document.getElementById('bgvid');v.src=vids[vidx];document.querySelector('.vid-btn').textContent='Видео '+(vidx+1);}
 connect();render();
 </script>
 </body></html>
