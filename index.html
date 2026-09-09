@@ -21,9 +21,33 @@ html,body{margin:0;height:100%;padding:0;background:#0a1510;color:var(--text);fo
 .reset{width:100%;padding:9px;border-radius:10px;background:transparent;color:var(--accent);font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:.2s;border:1px solid rgba(74,222,128,.3)}
 .reset:hover{background:rgba(74,222,128,.15);border-color:var(--accent)}
 .frame-wrap{width:850px;height:720px;border-radius:16px;overflow:hidden;background:rgba(22,38,29,.4);backdrop-filter:blur(10px);box-shadow:0 10px 34px rgba(0,0,0,.35),0 0 0 2px rgba(74,222,128,.3),0 0 20px rgba(74,222,128,.15);border:2px solid rgba(74,222,128,.4);position:relative}
+.leaderboard{width:280px;min-height:170px;display:flex;flex-direction:column;gap:8px;background:rgba(22,38,29,.5);backdrop-filter:blur(10px);border:1px solid rgba(74,222,128,.2);border-radius:16px;padding:16px;box-shadow:0 10px 34px rgba(0,0,0,.35)}
+.leaderboard h3{margin:0 0 8px;color:var(--accent);font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;text-align:center}
+.leaderboard-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
+.leaderboard-list::-webkit-scrollbar{width:4px}
+.leaderboard-list::-webkit-scrollbar-thumb{background:var(--accent);border-radius:8px}
+.lb-item{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-radius:8px;background:rgba(0,0,0,.15)}
+.lb-item .rank{font-weight:800;margin-right:8px;min-width:24px;text-align:center}
+.lb-item .name{flex:1;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-item .amount{font-weight:800;color:var(--accent)}
+.lb-item.gold{background:linear-gradient(90deg,rgba(255,215,0,.15),transparent);border:1px solid rgba(255,215,0,.4)}
+.lb-item.gold .rank{color:#ffd700;font-size:18px}
+.lb-item.gold .name{color:#ffd700;font-size:16px;text-shadow:0 0 10px rgba(255,215,0,.5)}
+.lb-item.gold .amount{color:#ffd700;font-size:16px;text-shadow:0 0 10px rgba(255,215,0,.5)}
+.lb-item.silver{background:linear-gradient(90deg,rgba(192,192,192,.15),transparent);border:1px solid rgba(192,192,192,.4)}
+.lb-item.silver .rank{color:#c0c0c0;font-size:16px}
+.lb-item.silver .name{color:#c0c0c0;font-size:14px;text-shadow:0 0 8px rgba(192,192,192,.4)}
+.lb-item.silver .amount{color:#c0c0c0;font-size:14px;text-shadow:0 0 8px rgba(192,192,192,.4)}
+.lb-item.bronze{background:linear-gradient(90deg,rgba(205,127,50,.15),transparent);border:1px solid rgba(205,127,50,.4)}
+.lb-item.bronze .rank{color:#cd7f32;font-size:14px}
+.lb-item.bronze .name{color:#cd7f32;font-size:13px;text-shadow:0 0 6px rgba(205,127,50,.4)}
+.lb-item.bronze .amount{color:#cd7f32;font-size:13px;text-shadow:0 0 6px rgba(205,127,50,.4)}
+.lb-item.normal .rank{color:var(--muted);font-size:11px}
+.lb-item.normal .name{color:var(--text);font-size:11px}
+.lb-item.normal .amount{color:var(--muted);font-size:11px}
 .frame-wrap::before{content:'';position:absolute;inset:0;border-radius:16px;padding:2px;background:linear-gradient(135deg,rgba(74,222,128,.5),transparent,rgba(74,222,128,.2));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
 iframe{width:100%;height:100%;display:block;border:0;background:#0a1510;opacity:0;pointer-events:none}
-.chat-overlay{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;justify-content:flex-end;padding:10px;overflow-y:scroll;font-size:13px;line-height:1.5;background:rgba(10,21,16,.92);z-index:5}
+.chat-overlay{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;justify-content:flex-end;padding:10px;overflow-y:scroll;font-size:13px;line-height:1.5;background:rgba(10,21,16,.7);z-index:5}
 .chat-overlay::-webkit-scrollbar{width:6px}
 .chat-overlay::-webkit-scrollbar-thumb{background:var(--accent);border-radius:8px}
 .chat-overlay::-webkit-scrollbar-track{background:rgba(74,222,128,.08);border-radius:8px}
@@ -61,23 +85,23 @@ iframe{width:100%;height:100%;display:block;border:0;background:#0a1510;opacity:
 .vid-opt{padding:10px 18px;border-radius:8px;background:rgba(22,38,29,.95);backdrop-filter:blur(8px);color:var(--accent);font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:.2s;border:1px solid rgba(74,222,128,.15);white-space:nowrap;text-align:center;min-width:110px}
 .vid-opt:hover{background:rgba(74,222,128,.2);border-color:var(--accent)}
 .vid-opt.active{background:var(--accent);color:#0f1e16;border-color:var(--accent)}
-.timer-wrapper{display:flex;flex-direction:column;align-items:center;gap:16px;align-self:flex-start;margin-top:20px}
-.timer-container{position:relative;width:180px;height:180px;display:flex;justify-content:center;align-items:center}
+.timer-wrapper{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(74,222,128,.15)}
+.timer-container{position:relative;width:140px;height:140px;display:flex;justify-content:center;align-items:center}
 .timer-container svg{position:absolute;width:100%;height:100%;transform:rotate(-90deg)}
 .timer-container circle{fill:none;stroke-width:10;stroke-linecap:round}
 .circle-bg{stroke:rgba(74,222,128,.08)}
 .circle-progress{stroke:url(#timerGradient);stroke-dasharray:502;stroke-dashoffset:0;transition:stroke-dashoffset 1s linear;filter:drop-shadow(0 0 6px rgba(74,222,128,.5))}
 .time-display{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.time-numbers{font-size:2.2rem;font-weight:900;letter-spacing:2px;color:var(--accent);text-shadow:0 0 20px rgba(74,222,128,.4)}
-.time-label{font-size:0.65rem;text-transform:uppercase;letter-spacing:3px;color:var(--muted);margin-top:6px}
+.time-numbers{font-size:1.6rem;font-weight:900;letter-spacing:2px;color:var(--accent);text-shadow:0 0 20px rgba(74,222,128,.4)}
+.time-label{font-size:0.55rem;text-transform:uppercase;letter-spacing:3px;color:var(--muted);margin-top:4px}
 .time-label.finish{color:#f87171;text-shadow:0 0 10px rgba(239,68,68,.5)}
 .timer-controls{display:flex;flex-direction:column;gap:8px;align-items:center}
 .timer-row{display:flex;gap:8px}
-.timer-btn{padding:12px 20px;border-radius:12px;background:transparent;color:var(--accent);font-weight:700;font-size:14px;cursor:pointer;transition:.25s;border:1px solid rgba(74,222,128,.3);min-width:55px;text-align:center;text-transform:uppercase;letter-spacing:.5px;box-shadow:0 3px 10px rgba(0,0,0,.25)}
+.timer-btn{padding:8px 14px;border-radius:10px;background:transparent;color:var(--accent);font-weight:700;font-size:12px;cursor:pointer;transition:.25s;border:1px solid rgba(74,222,128,.3);min-width:40px;text-align:center;text-transform:uppercase;letter-spacing:.5px;box-shadow:0 3px 10px rgba(0,0,0,.25)}
 .timer-btn:hover{background:rgba(74,222,128,.15);border-color:var(--accent);box-shadow:0 5px 20px rgba(74,222,128,.3);transform:translateY(-2px)}
 .timer-btn:active{transform:translateY(0)}
 .timer-btn.active{background:rgba(74,222,128,.2);color:var(--accent);border-color:var(--accent);box-shadow:0 0 15px rgba(74,222,128,.4)}
-.timer-btn.start-btn{padding:14px 32px;font-size:13px;letter-spacing:1px}
+.timer-btn.start-btn{padding:10px 22px;font-size:11px;letter-spacing:1px}
 .winner-btn{width:100%;padding:10px;border-radius:10px;background:transparent;color:var(--accent);font-weight:800;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:.25s;border:1px solid rgba(74,222,128,.3);margin-top:4px}
 .winner-btn:hover{background:rgba(74,222,128,.15);border-color:var(--accent);box-shadow:0 4px 15px rgba(74,222,128,.3)}
 .winner-options{display:flex;flex-direction:column;gap:6px;margin-top:6px;max-height:0;overflow:hidden;transition:max-height .3s ease,opacity .3s ease;opacity:0}
@@ -193,35 +217,37 @@ iframe{width:100%;height:100%;display:block;border:0;background:#0a1510;opacity:
       <button class="winner-opt" onclick="startQuickRoll()">БЫСТРЫЙ РОЛ</button>
     </div>
     <button class="reset" onclick="openWheelStats()" style="margin-top:8px">📊 СТАТИСТИКА</button>
+    <div class="timer-wrapper">
+      <div class="timer-container">
+        <svg><defs><linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#4ade80"/><stop offset="100%" stop-color="#22c55e"/></linearGradient></defs>
+        <circle class="circle-bg" cx="90" cy="90" r="80"></circle>
+        <circle class="circle-progress" cx="90" cy="90" r="80" id="circleProgress"></circle></svg>
+        <div class="time-display">
+          <span class="time-numbers" id="timeDisplay">00:00</span>
+          <span class="time-label" id="timeLabel">Осталось</span>
+        </div>
+      </div>
+      <div class="timer-controls">
+        <div class="timer-row">
+          <button class="timer-btn" onclick="adjustTime(60)">+1</button>
+          <button class="timer-btn" onclick="adjustTime(-60)">-1</button>
+        </div>
+        <div class="timer-row">
+          <button class="timer-btn start-btn" id="btnStart" onclick="startTimer()">Старт</button>
+          <button class="timer-btn start-btn" id="btnPause" onclick="pauseTimer()">Пауза</button>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="frame-wrap">
   <iframe id="twitch-chat-frame" title="Twitch chat for bib4ek" loading="lazy" allow="clipboard-write"></iframe>
   <div class="chat-overlay" id="chatOverlay"></div>
 </div>
-  <div class="timer-wrapper">
-    <div class="timer-container">
-      <svg><defs><linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#4ade80"/><stop offset="100%" stop-color="#22c55e"/></linearGradient></defs>
-      <circle class="circle-bg" cx="90" cy="90" r="80"></circle>
-      <circle class="circle-progress" cx="90" cy="90" r="80" id="circleProgress"></circle></svg>
-      <div class="time-display">
-        <span class="time-numbers" id="timeDisplay">00:00</span>
-        <span class="time-label" id="timeLabel">Осталось</span>
-      </div>
-    </div>
-    <div class="timer-controls">
-      <div class="timer-row">
-        <button class="timer-btn" onclick="adjustTime(60)">+1</button>
-        <button class="timer-btn" onclick="adjustTime(-60)">-1</button>
-      </div>
-      <div class="timer-row">
-        <button class="timer-btn start-btn" id="btnStart" onclick="startTimer()">Старт</button>
-        <button class="timer-btn start-btn" id="btnPause" onclick="pauseTimer()">Пауза</button>
-      </div>
-    </div>
+  <div class="leaderboard">
+    <h3>🏆 ТОП ВЫВОДОВ</h3>
+    <div class="leaderboard-list" id="leaderboardList"></div>
   </div>
 </div>
-
-<!-- WHEEL MODAL -->
 <div class="wheel-modal" id="wheelModal">
   <div class="close-x" onclick="closeWheel()">&times;</div>
   <div class="wheel-container">
@@ -373,6 +399,48 @@ function renderModal(){var q=document.getElementById('search').value.trim().toLo
 document.getElementById('tb-list').onclick=function(e){if(e.target&&e.target.classList.contains('del'))removePart(e.target.getAttribute('data-n'));};
 function render(){document.getElementById('cnt').textContent=parts.size;localStorage.setItem('bib4ek_parts',JSON.stringify(Array.from(parts)));}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// LEADERBOARD RENDERER
+function renderLeaderboard(){
+  var list=document.getElementById('leaderboardList');
+  if(!list)return;
+  
+  // Calculate total withdrawals per user
+  var totals={};
+  Object.keys(winnerHistory).forEach(function(key){
+    var total=0;
+    (winnerHistory[key]||[]).forEach(function(h){
+      if(!h.isReroll)total+=(h.amount||0);
+    });
+    if(total>0)totals[key]=total;
+  });
+  
+  // Sort by amount descending
+  var sorted=Object.keys(totals).map(function(name){
+    return{name:name,total:totals[name]};
+  }).sort(function(a,b){return b.total-a.total});
+  
+  if(sorted.length===0){
+    list.innerHTML='<div style="color:var(--muted);text-align:center;padding:20px;font-size:11px">Нет данных</div>';
+    return;
+  }
+  
+  // Render items
+  list.innerHTML=sorted.map(function(item,i){
+    var cls='lb-item ';
+    var rankSymbol='';
+    if(i===0){cls+='gold';rankSymbol='🥇';}
+    else if(i===1){cls+='silver';rankSymbol='🥈';}
+    else if(i===2){cls+='bronze';rankSymbol='🥉';}
+    else {cls+='normal';rankSymbol=(i+1)+'.';}
+    
+    return'<div class="'+cls+'">'+
+      '<span class="rank">'+rankSymbol+'</span>'+
+      '<span class="name">'+esc(item.name)+'</span>'+
+      '<span class="amount">'+item.total.toLocaleString()+' ₽</span>'+
+      '</div>';
+  }).join('');
+}
 
 // CUSTOM CHAT RENDERER
 var chatOverlay=document.getElementById('chatOverlay');
@@ -581,6 +649,7 @@ function saveWinnerStats(){
     if(!winnerHistory[key])winnerHistory[key]=[];
     winnerHistory[key].push({amount:amt,deposit:dep,tg:tg,site:'---',date:new Date().toLocaleDateString('ru-RU')+' '+new Date().toLocaleTimeString('ru-RU')});
     try{localStorage.setItem('bib4ek_winner_history',JSON.stringify(winnerHistory));}catch(e){}
+    renderLeaderboard();
   }
   if(currentSession){
     var elapsed=Date.now()-currentSession.startTime;
@@ -682,6 +751,7 @@ f.src='https://www.twitch.tv/embed/'+CH+'/chat?parent='+encodeURIComponent(locat
 displayTimer();
 connect();
 render();
+renderLeaderboard();
 
 </script>
 </body>
