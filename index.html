@@ -46,6 +46,14 @@ html,body{margin:0;height:100%;padding:0;background:#0a1510;color:var(--text);fo
 .lb-item.normal .rank{color:var(--muted);font-size:11px}
 .lb-item.normal .name{color:var(--text);font-size:11px}
 .lb-item.normal .amount{color:var(--muted);font-size:11px}
+.password-modal{display:flex;position:fixed;inset:0;background:rgba(0,0,0,.85);align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(8px)}
+.password-box{width:340px;background:var(--panel);border:2px solid var(--accent);border-radius:20px;padding:30px;display:flex;flex-direction:column;gap:16px;box-shadow:0 0 60px rgba(74,222,128,.3)}
+.password-box h2{margin:0;color:var(--accent);font-size:16px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;text-align:center}
+.password-box input{padding:12px;border-radius:10px;background:rgba(0,0,0,.3);border:1px solid rgba(74,222,128,.3);color:var(--text);font-size:16px;text-align:center;outline:none;transition:.2s;letter-spacing:2px}
+.password-box input:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(74,222,128,.15)}
+.password-box .pbtn{margin-top:4px}
+.password-error{color:#f87171;font-size:12px;text-align:center;min-height:18px;font-weight:600}
+.password-hint{color:var(--muted);font-size:10px;text-align:center;margin-top:-8px}
 .frame-wrap::before{content:'';position:absolute;inset:0;border-radius:16px;padding:2px;background:linear-gradient(135deg,rgba(74,222,128,.5),transparent,rgba(74,222,128,.2));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
 iframe{width:100%;height:100%;display:block;border:0;background:#0a1510;opacity:0;pointer-events:none}
 .chat-overlay{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;justify-content:flex-end;padding:10px;overflow-y:scroll;font-size:13px;line-height:1.5;background:rgba(10,21,16,.5);z-index:5}
@@ -193,6 +201,15 @@ iframe{width:100%;height:100%;display:block;border:0;background:#0a1510;opacity:
 </style>
 </head>
 <body>
+<div class="password-modal" id="passwordModal">
+  <div class="password-box">
+    <h2>🔒 ВХОД</h2>
+    <input type="password" id="passwordInput" placeholder="Введите пароль" autofocus>
+    <div class="password-error" id="passwordError"></div>
+    <button class="pbtn" onclick="checkPassword()">ВОЙТИ</button>
+    <div class="password-hint">Подсказка: a1a1</div>
+  </div>
+</div>
 <video id="bgvid" autoplay muted loop playsinline>
   <source src="biba1.mp4" type="video/mp4">
 </video>
@@ -375,6 +392,29 @@ var vidx=0;
 var vidMenuOpen=false;
 var timerSeconds=0,timerInterval=null,timerRunning=false;
 var MAX_DASH=2*Math.PI*56;
+var passwordModal=document.getElementById('passwordModal');
+var passwordInput=document.getElementById('passwordInput');
+var passwordError=document.getElementById('passwordError');
+var CORRECT_PASSWORD='a1a1';
+
+function checkPassword(){
+  var val=passwordInput.value.trim();
+  if(val===CORRECT_PASSWORD){
+    passwordModal.style.display='none';
+    document.body.style.overflow='';
+  }else{
+    passwordError.textContent='Неверный пароль!';
+    passwordInput.value='';
+    passwordInput.focus();
+  }
+}
+
+passwordInput.addEventListener('keydown',function(e){
+  if(e.key==='Enter')checkPassword();
+});
+
+// Prevent access without password
+document.body.style.overflow='hidden';
 var winnerMenuOpen=false;
 
 // WHEEL VARIABLES
