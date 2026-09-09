@@ -20,8 +20,19 @@ html,body{margin:0;height:100%;padding:0;background:#0a1510;color:var(--text);fo
 .pbtn:hover{background:var(--accent);color:#0f1e16}
 .reset{width:100%;padding:9px;border-radius:10px;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:.2s}
 .reset:hover{background:var(--accent);color:#0f1e16}
-.frame-wrap{width:850px;height:720px;border-radius:16px;overflow:hidden;background:var(--panel);box-shadow:0 10px 34px rgba(0,0,0,.35)}
-iframe{width:100%;height:100%;display:block;border:0;background:var(--panel)}
+.frame-wrap{width:850px;height:720px;border-radius:16px;overflow:hidden;background:var(--panel);box-shadow:0 10px 34px rgba(0,0,0,.35),0 0 0 2px rgba(74,222,128,.3),0 0 20px rgba(74,222,128,.15);border:2px solid rgba(74,222,128,.4);position:relative}
+.frame-wrap::before{content:'';position:absolute;inset:0;border-radius:16px;padding:2px;background:linear-gradient(135deg,rgba(74,222,128,.5),transparent,rgba(74,222,128,.2));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+iframe{width:100%;height:100%;display:block;border:0;background:#0a1510;opacity:0;pointer-events:none}
+.chat-overlay{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;padding:10px;overflow-y:auto;font-size:13px;line-height:1.5;background:rgba(10,21,16,.85);z-index:5}
+.chat-overlay::-webkit-scrollbar{width:5px}
+.chat-overlay::-webkit-scrollbar-thumb{background:var(--accent);border-radius:8px}
+.chat-overlay::-webkit-scrollbar-track{background:rgba(74,222,128,.05);border-radius:8px}
+.chat-msg{padding:4px 8px;border-bottom:1px solid rgba(74,222,128,.05);word-wrap:break-word}
+.chat-msg .nick{color:#fff;font-weight:700}
+.chat-msg.participant .nick{color:var(--accent);font-weight:800;text-shadow:0 0 8px rgba(74,222,128,.4)}
+.chat-msg .time{color:var(--muted);font-size:10px;margin-right:6px}
+.chat-msg .text{color:#e8f5ec}
+.chat-msg.highlight{background:rgba(74,222,128,.08);border-left:3px solid var(--accent);border-radius:6px}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);align-items:flex-start;justify-content:center;z-index:1000}
 .modal.open{display:flex}
 .tablebox{width:500px;max-width:92vw;max-height:80vh;background:var(--panel);border-radius:16px;padding:18px;box-shadow:0 14px 40px rgba(0,0,0,.55);display:flex;flex-direction:column;gap:12px}
@@ -115,44 +126,44 @@ iframe{width:100%;height:100%;display:block;border:0;background:var(--panel)}
 .stat-item .time{color:var(--text);font-size:12px}
 
 /* WINNER SCREEN MODAL STYLES */
-.winner-modal-content{flex-direction:column;width:90%;height:90%;background:var(--bg);padding:30px;border:2px solid var(--accent);box-shadow:0 0 60px rgba(74,222,128,.3)}
-.close-x{position:absolute;right:20px;top:10px;font-size:30px;color:var(--accent);cursor:pointer;transition:.3s;z-index:10}
+.winner-modal-content{flex-direction:column;width:620px;height:420px;background:var(--bg);padding:16px;border:none;border-radius:24px;box-shadow:0 0 60px rgba(74,222,128,.3)}
+.close-x{position:absolute;right:14px;top:6px;font-size:22px;color:var(--accent);cursor:pointer;transition:.3s;z-index:10}
 .close-x:hover{transform:scale(1.2);text-shadow:0 0 15px var(--accent)}
-.win-header-block{display:flex;justify-content:space-between;align-items:center;gap:20px;transition:.5s}
+.win-header-block{display:flex;justify-content:space-between;align-items:center;gap:14px;transition:.5s}
 .win-header-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-#win-status-label{color:var(--accent);font-weight:800;letter-spacing:2px;font-size:13px;display:block;margin-bottom:4px;text-transform:uppercase}
-#win-nick{font-size:48px;margin:0;color:#fff;text-shadow:0 0 30px rgba(74,222,128,.5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+#win-status-label{color:var(--accent);font-weight:800;letter-spacing:2px;font-size:11px;display:block;margin-bottom:2px;text-transform:uppercase}
+#win-nick{font-size:28px;margin:0;color:#fff;text-shadow:0 0 30px rgba(74,222,128,.5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 #win-nick.winner-responded{color:var(--accent);text-shadow:0 0 40px rgba(74,222,128,.8)}
 #win-status-label.winner-responded{color:var(--accent);text-shadow:0 0 20px rgba(74,222,128,.7)}
-#reroll-counter-display{color:var(--accent);font-size:14px;font-weight:bold;margin-top:6px}
-#win-timer-label{border:2px solid var(--accent);padding:10px 20px;border-radius:10px;color:var(--accent);font-size:24px;font-family:'Orbitron',monospace;flex-shrink:0;background:rgba(74,222,128,.05)}
-#win-timer-label.timer-responded{color:#22c55e;background:rgba(34,197,94,.2);border-color:#22c55e;box-shadow:0 0 25px rgba(34,197,94,.5)}
-.win-grid{display:grid;grid-template-columns:1fr 1fr 340px;gap:18px;flex-grow:1;margin-top:18px;overflow:hidden}
-.win-card{background:rgba(22,38,29,.8);border:1px solid rgba(74,222,128,.25);border-radius:16px;padding:18px;display:flex;flex-direction:column;overflow:hidden}
-.win-card h4{margin-top:0;color:var(--accent);font-size:12px;text-transform:uppercase;letter-spacing:1px}
-#win-chat-history{overflow-y:auto;flex-grow:1;font-size:12px;min-height:0;max-height:150px}
-#win-chat-history::-webkit-scrollbar{width:5px}
+#reroll-counter-display{color:var(--accent);font-size:11px;font-weight:bold;margin-top:3px}
+#win-timer-label{border:1px solid rgba(74,222,128,.3);padding:6px 14px;border-radius:14px;color:var(--accent);font-size:16px;font-family:'Orbitron',monospace;flex-shrink:0;background:rgba(74,222,128,.05)}
+#win-timer-label.timer-responded{color:#22c55e;background:rgba(34,197,94,.2);border-color:rgba(34,197,94,.4);box-shadow:0 0 25px rgba(34,197,94,.5)}
+.win-grid{display:grid;grid-template-columns:1fr 1fr 220px;gap:10px;flex-grow:1;margin-top:10px;overflow:hidden}
+.win-card{background:rgba(22,38,29,.8);border:1px solid rgba(74,222,128,.12);border-radius:18px;padding:10px;display:flex;flex-direction:column;overflow:hidden}
+.win-card h4{margin-top:0;color:var(--accent);font-size:10px;text-transform:uppercase;letter-spacing:1px}
+#win-chat-history{overflow-y:auto;flex-grow:1;font-size:11px;min-height:0;max-height:110px}
+#win-chat-history::-webkit-scrollbar{width:4px}
 #win-chat-history::-webkit-scrollbar-thumb{background:var(--accent);border-radius:8px}
 #win-chat-history::-webkit-scrollbar-track{background:rgba(74,222,128,.05);border-radius:8px}
-#win-chat-history div{padding:5px 0;border-bottom:1px solid rgba(74,222,128,.05)}
+#win-chat-history div{padding:3px 0;border-bottom:1px solid rgba(74,222,128,.05)}
 #win-chat-history small{color:var(--muted)}
-.win-response-msg{background:rgba(74,222,128,.08) !important;border-left:3px solid var(--accent);border-radius:6px;padding:6px 10px !important;margin:4px 0 !important}
-.win-stats-row{display:flex;gap:15px;margin-bottom:10px}
-.win-stat-item{padding:8px 0}
-.win-stat-item small{color:var(--muted);font-size:10px;text-transform:uppercase}
-.editable-stat{font-size:18px;font-weight:bold;color:var(--accent);cursor:pointer;transition:.2s}
+.win-response-msg{background:rgba(74,222,128,.08) !important;border-left:3px solid var(--accent);border-radius:10px;padding:4px 8px !important;margin:3px 0 !important}
+.win-stats-row{display:flex;gap:10px;margin-bottom:6px}
+.win-stat-item{padding:4px 0}
+.win-stat-item small{color:var(--muted);font-size:9px;text-transform:uppercase}
+.editable-stat{font-size:14px;font-weight:bold;color:var(--accent);cursor:pointer;transition:.2s}
 .editable-stat:hover{text-shadow:0 0 10px var(--accent)}
-#win-drop-history{overflow-y:auto;flex-grow:1;font-size:11px;min-height:0;max-height:200px}
-#win-drop-history::-webkit-scrollbar{width:5px}
+#win-drop-history{overflow-y:auto;flex-grow:1;font-size:10px;min-height:0;max-height:140px}
+#win-drop-history::-webkit-scrollbar{width:4px}
 #win-drop-history::-webkit-scrollbar-thumb{background:var(--accent);border-radius:8px}
 #win-drop-history::-webkit-scrollbar-track{background:rgba(74,222,128,.05);border-radius:8px}
-#win-drop-history .hist-row{display:flex;flex-direction:column;border-bottom:1px solid rgba(74,222,128,.05);padding:6px 0}
-.win-form{background:rgba(22,38,29,.6);border:1px solid rgba(74,222,128,.25);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:8px}
-.win-form h3{margin:0;color:var(--accent);font-size:13px;text-transform:uppercase;letter-spacing:1px;text-align:center}
-.win-form input{padding:8px;border-radius:8px;background:rgba(0,0,0,.3);border:1px solid rgba(74,222,128,.3);color:var(--text);font-size:13px;outline:none;transition:.2s}
-.win-form input:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(74,222,128,.1)}
-.win-form .pbtn{margin-top:6px}
-.win-form .reset{margin-top:4px}
+#win-drop-history .hist-row{display:flex;flex-direction:column;border-bottom:1px solid rgba(74,222,128,.05);padding:4px 0}
+.win-form{background:rgba(22,38,29,.6);border:1px solid rgba(74,222,128,.12);border-radius:18px;padding:10px;display:flex;flex-direction:column;gap:5px}
+.win-form h3{margin:0;color:var(--accent);font-size:11px;text-transform:uppercase;letter-spacing:1px;text-align:center}
+.win-form input{padding:5px;border-radius:10px;background:rgba(0,0,0,.3);border:1px solid rgba(74,222,128,.2);color:var(--text);font-size:11px;outline:none;transition:.2s}
+.win-form input:focus{border-color:rgba(74,222,128,.5);box-shadow:0 0 0 2px rgba(74,222,128,.1)}
+.win-form .pbtn{margin-top:4px}
+.win-form .reset{margin-top:3px}
 </style>
 </head>
 <body>
@@ -182,7 +193,10 @@ iframe{width:100%;height:100%;display:block;border:0;background:var(--panel)}
     </div>
     <button class="reset" onclick="openWheelStats()" style="margin-top:8px">📊 СТАТИСТИКА</button>
   </div>
-  <div class="frame-wrap"><iframe id="twitch-chat-frame" title="Twitch chat for bib4ek" loading="lazy" allow="clipboard-write"></iframe></div>
+  <div class="frame-wrap">
+  <iframe id="twitch-chat-frame" title="Twitch chat for bib4ek" loading="lazy" allow="clipboard-write"></iframe>
+  <div class="chat-overlay" id="chatOverlay"></div>
+</div>
   <div class="timer-wrapper">
     <div class="timer-container">
       <svg><defs><linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#4ade80"/><stop offset="100%" stop-color="#22c55e"/></linearGradient></defs>
@@ -358,6 +372,27 @@ function renderModal(){var q=document.getElementById('search').value.trim().toLo
 document.getElementById('tb-list').onclick=function(e){if(e.target&&e.target.classList.contains('del'))removePart(e.target.getAttribute('data-n'));};
 function render(){document.getElementById('cnt').textContent=parts.size;localStorage.setItem('bib4ek_parts',JSON.stringify(Array.from(parts)));}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// CUSTOM CHAT RENDERER
+var chatOverlay=document.getElementById('chatOverlay');
+var chatMessages=[];
+var MAX_CHAT_MSGS=200;
+
+function renderChatMessage(user,msg,time){
+  chatMessages.push({user:user,msg:msg,time:time});
+  if(chatMessages.length>MAX_CHAT_MSGS)chatMessages.shift();
+  chatOverlay.innerHTML=chatMessages.map(function(m){
+    var isParticipant=parts.has(m.user);
+    var isWinner=currentWinner&&m.user.toLowerCase()===currentWinner.toLowerCase();
+    var cls='chat-msg'+(isParticipant?' participant':'')+(isWinner?' highlight':'');
+    return'<div class="'+cls+'">'+
+      '<span class="time">'+m.time+'</span>'+
+      '<span class="nick">'+esc(m.user)+':</span> '+
+      '<span class="text">'+esc(m.msg)+'</span>'+
+      '</div>';
+  }).join('');
+  chatOverlay.scrollTop=chatOverlay.scrollHeight;
+}
 function toggleVidMenu(){vidMenuOpen=!vidMenuOpen;document.getElementById('vidOptions').classList.toggle('show',vidMenuOpen);document.getElementById('vidToggle').classList.toggle('open',vidMenuOpen);}
 function switchVid(idx){vidx=idx;var v=document.getElementById('bgvid');v.src=vids[vidx];v.load();v.play().catch(function(){});var opts=document.querySelectorAll('.vid-opt');opts.forEach(function(b,i){b.classList.toggle('active',i===vidx);});vidMenuOpen=false;document.getElementById('vidOptions').classList.remove('show');document.getElementById('vidToggle').classList.remove('open');}
 function displayTimer(){var m=Math.floor(timerSeconds/60);var s=timerSeconds%60;document.getElementById('timeDisplay').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');var origTotal=window._origTotal||60;var elapsed=origTotal-timerSeconds;var progress=origTotal>0?elapsed/origTotal:0;document.getElementById('circleProgress').style.strokeDashoffset=MAX_DASH*(1-progress);}
@@ -605,6 +640,7 @@ var mk='PRIVMSG #'+CH+' :';if(d.indexOf(mk)<0)return;var user,msg;
 if(d.charAt(0)==='@'){var p=d.split(' ');user=p[1].split('!')[0].substring(1);msg=d.split(mk)[1].trim();}else{user=d.split('!')[0].substring(1);msg=d.split(mk)[1].trim();}
 if(msg.trim().toLowerCase()===code.toLowerCase()&&!parts.has(user)){parts.add(user);render();}
 var time=new Date().toLocaleTimeString();
+renderChatMessage(user,msg,time);
 if(!userMessages[user])userMessages[user]=[];
 userMessages[user].push({time:time,text:msg});
 if(currentWinner&&user.toLowerCase()===currentWinner.toLowerCase()){
@@ -638,7 +674,7 @@ sock.onclose=function(){setTimeout(connect,5000);};
 }
 
 var f=document.getElementById('twitch-chat-frame');
-f.src='https://www.twitch.tv/embed/'+CH+'/chat?parent='+encodeURIComponent(location.hostname||'localhost')+'&darkpopout';
+f.src='https://www.twitch.tv/embed/'+CH+'/chat?parent='+encodeURIComponent(location.hostname||'localhost')+'&darkpopout&darkmode';
 
 displayTimer();
 connect();
