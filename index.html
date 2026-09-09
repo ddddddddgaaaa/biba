@@ -23,10 +23,11 @@ html,body{margin:0;height:100%;padding:0;background:#0a1510;color:var(--text);fo
 .frame-wrap{width:850px;height:720px;border-radius:16px;overflow:hidden;background:var(--panel);box-shadow:0 10px 34px rgba(0,0,0,.35),0 0 0 2px rgba(74,222,128,.3),0 0 20px rgba(74,222,128,.15);border:2px solid rgba(74,222,128,.4);position:relative}
 .frame-wrap::before{content:'';position:absolute;inset:0;border-radius:16px;padding:2px;background:linear-gradient(135deg,rgba(74,222,128,.5),transparent,rgba(74,222,128,.2));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
 iframe{width:100%;height:100%;display:block;border:0;background:#0a1510;opacity:0;pointer-events:none}
-.chat-overlay{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;padding:10px;overflow-y:auto;font-size:13px;line-height:1.5;background:rgba(10,21,16,.85);z-index:5}
-.chat-overlay::-webkit-scrollbar{width:5px}
+.chat-overlay{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;justify-content:flex-end;padding:10px;overflow-y:scroll;font-size:13px;line-height:1.5;background:rgba(10,21,16,.92);z-index:5}
+.chat-overlay::-webkit-scrollbar{width:6px}
 .chat-overlay::-webkit-scrollbar-thumb{background:var(--accent);border-radius:8px}
-.chat-overlay::-webkit-scrollbar-track{background:rgba(74,222,128,.05);border-radius:8px}
+.chat-overlay::-webkit-scrollbar-track{background:rgba(74,222,128,.08);border-radius:8px}
+.chat-overlay::-webkit-scrollbar-thumb:hover{background:#22c55e}
 .chat-msg{padding:4px 8px;border-bottom:1px solid rgba(74,222,128,.05);word-wrap:break-word}
 .chat-msg .nick{color:#fff;font-weight:700}
 .chat-msg.participant .nick{color:var(--accent);font-weight:800;text-shadow:0 0 8px rgba(74,222,128,.4)}
@@ -391,7 +392,9 @@ function renderChatMessage(user,msg,time){
       '<span class="text">'+esc(m.msg)+'</span>'+
       '</div>';
   }).join('');
-  chatOverlay.scrollTop=chatOverlay.scrollHeight;
+  requestAnimationFrame(function(){
+    chatOverlay.scrollTop=chatOverlay.scrollHeight;
+  });
 }
 function toggleVidMenu(){vidMenuOpen=!vidMenuOpen;document.getElementById('vidOptions').classList.toggle('show',vidMenuOpen);document.getElementById('vidToggle').classList.toggle('open',vidMenuOpen);}
 function switchVid(idx){vidx=idx;var v=document.getElementById('bgvid');v.src=vids[vidx];v.load();v.play().catch(function(){});var opts=document.querySelectorAll('.vid-opt');opts.forEach(function(b,i){b.classList.toggle('active',i===vidx);});vidMenuOpen=false;document.getElementById('vidOptions').classList.remove('show');document.getElementById('vidToggle').classList.remove('open');}
