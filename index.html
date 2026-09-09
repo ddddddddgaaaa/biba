@@ -488,9 +488,7 @@ var chatOverlay=document.getElementById('chatOverlay');
 var chatMessages=[];
 var MAX_CHAT_MSGS=200;
 
-function renderChatMessage(user,msg,time){
-  chatMessages.push({user:user,msg:msg,time:time});
-  if(chatMessages.length>MAX_CHAT_MSGS)chatMessages.shift();
+function renderChatOverlay(){
   chatOverlay.innerHTML=chatMessages.map(function(m){
     var isParticipant=parts.has(m.user);
     var isWinner=currentWinner&&m.user.toLowerCase()===currentWinner.toLowerCase();
@@ -504,6 +502,12 @@ function renderChatMessage(user,msg,time){
   requestAnimationFrame(function(){
     chatOverlay.scrollTop=chatOverlay.scrollHeight;
   });
+}
+
+function renderChatMessage(user,msg,time,id){
+  chatMessages.push({user:user,msg:msg,time:time,id:id||null});
+  if(chatMessages.length>MAX_CHAT_MSGS)chatMessages.shift();
+  renderChatOverlay();
 }
 function toggleVidMenu(){vidMenuOpen=!vidMenuOpen;document.getElementById('vidOptions').classList.toggle('show',vidMenuOpen);document.getElementById('vidToggle').classList.toggle('open',vidMenuOpen);}
 function switchVid(idx){vidx=idx;var v=document.getElementById('bgvid');v.src=vids[vidx];v.load();v.play().catch(function(){});var opts=document.querySelectorAll('.vid-opt');opts.forEach(function(b,i){b.classList.toggle('active',i===vidx);});vidMenuOpen=false;document.getElementById('vidOptions').classList.remove('show');document.getElementById('vidToggle').classList.remove('open');}
@@ -745,45 +749,111 @@ function closeModals(){
 
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeModals();closeWheel();}});
 
-function connect(){if(sock)try{sock.close()}catch(e){}
-sock=new WebSocket('wss://irc-ws.chat.twitch.tv:443');
-sock.onopen=function(){sock.send('CAP REQ :twitch.tv/tags');sock.send('PASS SCHMOOPIIE');sock.send('NICK justinfan123');sock.send('JOIN #'+CH);};
-sock.onmessage=function(ev){var d=ev.data;if(d.indexOf('PING')===0){sock.send('PONG :tmi.twitch.tv');return;}
-var mk='PRIVMSG #'+CH+' :';if(d.indexOf(mk)<0)return;var user,msg;
-if(d.charAt(0)==='@'){var p=d.split(' ');user=p[1].split('!')[0].substring(1);msg=d.split(mk)[1].trim();}else{user=d.split('!')[0].substring(1);msg=d.split(mk)[1].trim();}
-if(msg.trim().toLowerCase()===code.toLowerCase()&&!parts.has(user)){parts.add(user);render();}
-var time=new Date().toLocaleTimeString();
-renderChatMessage(user,msg,time);
-if(!userMessages[user])userMessages[user]=[];
-userMessages[user].push({time:time,text:msg});
-if(currentWinner&&user.toLowerCase()===currentWinner.toLowerCase()){
-  if(winTimerActive){
-    winTimerActive=false;
-    var timerLabel=document.getElementById('win-timer-label');
-    var statusLabel=document.getElementById('win-status-label');
-    var nick=document.getElementById('win-nick');
-    timerLabel.classList.add('timer-responded');
-    statusLabel.innerText='Победитель ответил';
-    statusLabel.classList.add('winner-responded');
-    nick.classList.add('winner-responded');
-  }
-  var winnerScreen=document.getElementById('winner-screen');
-  if(winnerScreen&&winnerScreen.classList.contains('open')){
-    var history=document.getElementById('win-chat-history');
-    if(history){
-      var newMsg=document.createElement('div');
-      newMsg.className='win-response-msg';
-      newMsg.innerHTML='<small style="color:var(--muted);">'+time+'</small> '+esc(msg);
-      history.insertBefore(newMsg,history.firstChild);
-      history.scrollTop=0;
+function connect(){
+  if(sock)try{sock.close()}catch(e){}
+  sock=new WebSocket('wss://irc-ws.chat.twitch.tv:443');
+  sock.onopen=function(){
+    sock.send('CAP REQ :twitch.tv/tags twitch.tv/commands');
+    sock.send('PASS SCHMOOPIIE');
+    sock.send('NICK justinfan123');
+    sock.send('JOIN #'+CH);
+  };
+  sock.onmessage=function(ev){
+    var d=ev.data;
+    // PING
+    if(d.indexOf('PING')===0){sock.send('PONG :tmi.twitch.tv');return;}
+
+    // Parse Twitch IRC tags
+    var tags={};
+    if(d.charAt(0)==='@'){
+      var spaceIdx=d.indexOf(' ');
+      if(spaceIdx>0){
+        var tagsStr=d.substring(1,spaceIdx);
+        tagsStr.split(';').forEach(function(tag){
+          var eq=tag.indexOf('=');
+          if(eq>=0)tags[tag.substring(0,eq)]=tag.substring(eq+1);
+        });
+      }
     }
-  }
-  winnerResponded=true;
-  if(currentSession)currentSession.endTime=Date.now();
-}
-winnerMessages.push({user:user,msg:msg,isWinner:currentWinner&&user.toLowerCase()===currentWinner.toLowerCase()});
-};
-sock.onclose=function(){setTimeout(connect,5000);};
+
+    // CLEARMSG — удаление конкретного сообщения модератором
+    var clearMsgMatch=d.indexOf(' CLEARMSG #'+CH+' :');
+    if(clearMsgMatch>=0){
+      var targetMsgId=tags['target-msg-id'];
+      var login=tags['login']||'';
+      if(targetMsgId){
+        chatMessages=chatMessages.filter(function(m){return m.id!==targetMsgId;});
+        renderChatOverlay();
+        // Удалить также из userMessages
+        if(login&&userMessages[login]){
+          userMessages[login]=userMessages[login].filter(function(m){return m.id!==targetMsgId;});
+        }
+      }
+      return;
+    }
+
+    // CLEARCHAT — бан/тайм-аут пользователя (удаление всех его сообщений)
+    var clearChatMatch=d.indexOf(' CLEARCHAT #'+CH+' :');
+    if(clearChatMatch>=0){
+      var targetUser=d.split(' CLEARCHAT #'+CH+' :')[1];
+      if(targetUser){
+        targetUser=targetUser.trim().toLowerCase();
+        chatMessages=chatMessages.filter(function(m){return m.user.toLowerCase()!==targetUser;});
+        renderChatOverlay();
+        // Удалить из userMessages
+        Object.keys(userMessages).forEach(function(k){
+          if(k.toLowerCase()===targetUser)delete userMessages[k];
+        });
+      }
+      return;
+    }
+
+    // PRIVMSG — обычное сообщение
+    var mk='PRIVMSG #'+CH+' :';
+    if(d.indexOf(mk)<0)return;
+    var user,msg;
+    if(tags['display-name'])user=tags['display-name'];
+    else if(d.charAt(0)==='@'){var p=d.split(' ');user=p[1].split('!')[0].substring(1);}
+    else{user=d.split('!')[0].substring(1);}
+    msg=d.split(mk)[1].trim();
+
+    if(msg.trim().toLowerCase()===code.toLowerCase()&&!parts.has(user)){parts.add(user);render();}
+
+    var time=new Date().toLocaleTimeString();
+    var msgId=tags['id']||null;
+    renderChatMessage(user,msg,time,msgId);
+
+    if(!userMessages[user])userMessages[user]=[];
+    userMessages[user].push({time:time,text:msg,id:msgId});
+
+    if(currentWinner&&user.toLowerCase()===currentWinner.toLowerCase()){
+      if(winTimerActive){
+        winTimerActive=false;
+        var timerLabel=document.getElementById('win-timer-label');
+        var statusLabel=document.getElementById('win-status-label');
+        var nick=document.getElementById('win-nick');
+        timerLabel.classList.add('timer-responded');
+        statusLabel.innerText='Победитель ответил';
+        statusLabel.classList.add('winner-responded');
+        nick.classList.add('winner-responded');
+      }
+      var winnerScreen=document.getElementById('winner-screen');
+      if(winnerScreen&&winnerScreen.classList.contains('open')){
+        var history=document.getElementById('win-chat-history');
+        if(history){
+          var newMsg=document.createElement('div');
+          newMsg.className='win-response-msg';
+          newMsg.innerHTML='<small style="color:var(--muted);">'+time+'</small> '+esc(msg);
+          history.insertBefore(newMsg,history.firstChild);
+          history.scrollTop=0;
+        }
+      }
+      winnerResponded=true;
+      if(currentSession)currentSession.endTime=Date.now();
+    }
+    winnerMessages.push({user:user,msg:msg,isWinner:currentWinner&&user.toLowerCase()===currentWinner.toLowerCase()});
+  };
+  sock.onclose=function(){setTimeout(connect,5000);};
 }
 
 var f=document.getElementById('twitch-chat-frame');
