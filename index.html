@@ -629,6 +629,7 @@ function renderWheelStats(){
   body.innerHTML=rows.map(function(r){
     return'<tr>'+
       '<td style="padding:7px;border-bottom:1px solid rgba(74,222,128,.05);color:var(--accent);font-weight:700">'+esc(r.name)+
+      '</td><td style="padding:7px;border-bottom:1px solid rgba(74,222,128,.05);color:#fff;font-weight:700">'+esc(r.site)+
       '</td><td style="padding:7px;border-bottom:1px solid rgba(74,222,128,.05);text-align:right;color:#22c55e;font-weight:700">'+r.amount.toLocaleString()+' ₽'+
       '</td><td style="padding:7px;border-bottom:1px solid rgba(74,222,128,.05);text-align:right;color:#f59e0b;font-weight:700">'+r.deposit.toLocaleString()+' ₽'+
       '</td><td style="padding:7px;border-bottom:1px solid rgba(74,222,128,.05);color:var(--muted)">'+esc(r.tg)+
