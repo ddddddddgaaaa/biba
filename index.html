@@ -198,6 +198,8 @@ iframe{width:100%;height:100%;display:block;border:0;background:#0a1510;opacity:
 .win-form h3{margin:0;color:var(--accent);font-size:11px;text-transform:uppercase;letter-spacing:1px;text-align:center}
 .win-form input{padding:5px;border-radius:10px;background:rgba(0,0,0,.3);border:1px solid rgba(74,222,128,.2);color:var(--text);font-size:11px;outline:none;transition:.2s}
 .win-form input:focus{border-color:rgba(74,222,128,.5);box-shadow:0 0 0 2px rgba(74,222,128,.1)}
+.win-form select{width:100%;padding:5px;border-radius:10px;background:rgba(0,0,0,.3);border:1px solid rgba(74,222,128,.2);color:var(--text);font-size:11px;outline:none;transition:.2s;appearance:none;cursor:pointer;text-align:center}
+.win-form select:focus{border-color:rgba(74,222,128,.5);box-shadow:0 0 0 2px rgba(74,222,128,.1)}
 .win-form .pbtn{margin-top:4px}
 .win-form .reset{margin-top:3px}
 </style>
@@ -313,6 +315,7 @@ iframe{width:100%;height:100%;display:block;border:0;background:#0a1510;opacity:
         <thead style="position:sticky;top:0;background:var(--panel)">
           <tr style="border-bottom:2px solid var(--accent)">
             <th style="padding:8px;text-align:left;color:var(--accent)">Ник</th>
+            <th style="padding:8px;text-align:left;color:var(--accent)">Сайт</th>
             <th style="padding:8px;text-align:right;color:var(--accent)">Вывод</th>
             <th style="padding:8px;text-align:right;color:var(--accent)">Деп</th>
             <th style="padding:8px;text-align:left;color:var(--accent)">Telegram</th>
@@ -357,6 +360,13 @@ iframe{width:100%;height:100%;display:block;border:0;background:#0a1510;opacity:
         <input type="number" id="win-deposit-input" placeholder="Сумма депозита (RUB)">
         <input type="number" id="win-amount-input" placeholder="Сумма вывода (RUB)">
         <input type="text" id="win-tg-input" placeholder="Telegram @username">
+        <select id="win-site-input">
+          <option value="---">Сайт</option>
+          <option value="MagicDrop">MagicDrop</option>
+          <option value="DastSkin">DastSkin</option>
+          <option value="VirusDrop">VirusDrop</option>
+          <option value="PokeDrop">PokeDrop</option>
+        </select>
         <button class="pbtn" onclick="saveWinnerStats()" style="margin-top:10px">СОХРАНИТЬ 📊</button>
         <button class="reset" onclick="closeWinnerScreen()">ЗАКРЫТЬ</button>
         <button class="reset" style="background:rgba(245,158,11,0.15);border-color:#f59e0b;color:#f59e0b;" onclick="reSpinToHome()">ПЕРЕКРУТИТЬ</button>
@@ -608,12 +618,12 @@ function renderWheelStats(){
     (winnerHistory[key]||[]).forEach(function(h){
       if(h.isReroll)return;
       if(q&&key.indexOf(q)<0)return;
-      rows.push({name:key,amount:h.amount||0,deposit:h.deposit||0,tg:h.tg||'---',date:h.date||'---'});
+      rows.push({name:key,site:h.site||'---',amount:h.amount||0,deposit:h.deposit||0,tg:h.tg||'---',date:h.date||'---'});
     });
   });
   rows.reverse();
   if(rows.length===0){
-    body.innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted)">Нет данных</td></tr>';
+    body.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--muted)">Нет данных</td></tr>';
     return;
   }
   body.innerHTML=rows.map(function(r){
@@ -663,6 +673,7 @@ function showWinner(name){
   document.getElementById('win-amount-input').value='';
   document.getElementById('win-deposit-input').value='';
   document.getElementById('win-tg-input').value='';
+  document.getElementById('win-site-input').value='---';
   document.getElementById('winner-screen').classList.add('open');
   var hCont=document.getElementById('win-chat-history');
   hCont.innerHTML=(userMessages[name]||[]).map(function(m){return'<div style="padding:5px 0;border-bottom:1px solid rgba(74,222,128,.05);font-size:12px;"><small style="color:var(--muted);">'+m.time+'</small> '+esc(m.text)+'</div>';}).reverse().join('');
@@ -695,7 +706,8 @@ function saveWinnerStats(){
   if(amt>0||dep>0){
     var key=currentWinner.toLowerCase();
     if(!winnerHistory[key])winnerHistory[key]=[];
-    winnerHistory[key].push({amount:amt,deposit:dep,tg:tg,site:'---',date:new Date().toLocaleDateString('ru-RU')+' '+new Date().toLocaleTimeString('ru-RU')});
+    var site=document.getElementById('win-site-input').value||'---';
+    winnerHistory[key].push({amount:amt,deposit:dep,tg:tg,site:site,date:new Date().toLocaleDateString('ru-RU')+' '+new Date().toLocaleTimeString('ru-RU')});
     try{localStorage.setItem('bib4ek_winner_history',JSON.stringify(winnerHistory));}catch(e){}
     renderLeaderboard();
   }
