@@ -119,7 +119,7 @@ iframe{width:100%;height:100%;display:block;border:0;background:#0a1510;opacity:
 .winner-btn{width:100%;padding:10px;border-radius:10px;background:transparent;color:var(--accent);font-weight:800;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:.25s;border:1px solid rgba(74,222,128,.3);margin-top:4px}
 .winner-btn:hover{background:rgba(74,222,128,.15);border-color:var(--accent);box-shadow:0 4px 15px rgba(74,222,128,.3)}
 .winner-options{display:flex;flex-direction:column;gap:6px;margin-top:6px;max-height:0;overflow:hidden;transition:max-height .3s ease,opacity .3s ease;opacity:0}
-.winner-options.show{max-height:200px;opacity:1;margin-top:8px}
+.winner-options.show{max-height:320px;opacity:1;margin-top:8px}
 .winner-opt{padding:10px;border-radius:8px;background:transparent;color:var(--accent);font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:.2s;border:1px solid rgba(74,222,128,.2);text-align:center}
 .winner-opt:hover{background:rgba(74,222,128,.15);border-color:var(--accent)}
 @media(max-width:900px){.app{flex-direction:column;height:auto}.side{width:90vw;max-width:540px}}
@@ -270,6 +270,9 @@ iframe{width:100%;height:100%;display:block;border:0;background:#0a1510;opacity:
     <div class="winner-options" id="winnerOptions">
       <button class="winner-opt" onclick="openWheel()">РУЛЕТКА</button>
       <button class="winner-opt" onclick="startQuickRoll()">БЫСТРЫЙ РОЛ</button>
+      <button class="winner-opt" onclick="startVipRoll()">РОЛЛ ТОЛЬКО VIP</button>
+      <button class="winner-opt" onclick="startModeratorRoll()">РОЛЛ ТОЛЬКО МОДЕРЫ</button>
+      <button class="winner-opt" onclick="startPrivilegedRoll()">РОЛЛ VIP + МОДЕРЫ</button>
     </div>
     <button class="reset" onclick="openWheelStats()" style="margin-top:8px">📊 СТАТИСТИКА</button>
     <div class="timer-wrapper">
@@ -392,7 +395,7 @@ iframe{width:100%;height:100%;display:block;border:0;background:#0a1510;opacity:
         <h3>Записать результат</h3>
         <input type="number" id="win-deposit-input" placeholder="Сумма депозита (RUB)">
         <input type="number" id="win-amount-input" placeholder="Сумма вывода (RUB)">
-        <input type="text" id="win-tg-input" placeholder="Telegram @username">
+        <input type="text" id="win-tg-input" placeholder="Telegram @username" oninput="saveWinnerTelegram()">
         <select id="win-site-input">
           <option value="---">Сайт</option>
           <option value="MagicDrop">MagicDrop</option>
@@ -483,6 +486,9 @@ var winnerMenuOpen=false;
 
 // WHEEL VARIABLES
 var wheelParticipants=[];
+var privilegedParticipants=new Set(JSON.parse(localStorage.getItem('bib4ek_privileged_participants')||'[]'));
+var vipParticipants=new Set(JSON.parse(localStorage.getItem('bib4ek_vip_participants')||'[]'));
+var moderatorParticipants=new Set(JSON.parse(localStorage.getItem('bib4ek_moderator_participants')||'[]'));
 var isWheelSpinning=false;
 var currentRotation=0;
 var selectedSpinMode='elimination';
@@ -774,12 +780,40 @@ function renderWheelStats(){
 }
 
 function startQuickRoll(){if(parts.size===0){alert('Нет участников!');return;}var arr=Array.from(parts);showWinner(arr[Math.floor(Math.random()*arr.length)]);}
+function startRoleRoll(roleSet,label){
+  document.getElementById('winnerOptions').classList.remove('show');
+  winnerMenuOpen=false;
+  var eligible=Array.from(parts).filter(function(name){return roleSet.has(name.trim().toLowerCase());});
+  if(eligible.length===0){alert('Нет участников '+label+'. Они должны написать кодовое слово в чат.');return;}
+  showWinner(eligible[Math.floor(Math.random()*eligible.length)]);
+}
+function startVipRoll(){startRoleRoll(vipParticipants,'с VIP-бейджем');}
+function startModeratorRoll(){startRoleRoll(moderatorParticipants,'с бейджем модератора');}
+function startPrivilegedRoll(){startRoleRoll(privilegedParticipants,'с VIP-бейджем или бейджем модератора');}
 
 // WINNER SCREEN VARIABLES (from eneeergyshow mechanics)
 var winTimerActive=false;
 var winnerHistory=JSON.parse(localStorage.getItem('bib4ek_winner_history')||'{}');
+var winnerTelegramProfiles=JSON.parse(localStorage.getItem('bib4ek_telegram_profiles')||'{}');
 var userMessages={};
 var rerollCount=0;
+
+function getWinnerTelegram(name){
+  var key=String(name||'').trim().toLowerCase();
+  if(Object.prototype.hasOwnProperty.call(winnerTelegramProfiles,key))return winnerTelegramProfiles[key];
+  var history=winnerHistory[key]||[];
+  for(var i=history.length-1;i>=0;i--){
+    if(history[i].tg)return history[i].tg;
+  }
+  return '';
+}
+
+function saveWinnerTelegram(){
+  if(!currentWinner)return;
+  var key=currentWinner.trim().toLowerCase();
+  winnerTelegramProfiles[key]=document.getElementById('win-tg-input').value.trim();
+  try{localStorage.setItem('bib4ek_telegram_profiles',JSON.stringify(winnerTelegramProfiles));}catch(e){}
+}
 
 function showWinner(name){
   closeModals();
@@ -808,7 +842,7 @@ function showWinner(name){
   renderWinnerHistory(name);
   document.getElementById('win-amount-input').value='';
   document.getElementById('win-deposit-input').value='';
-  document.getElementById('win-tg-input').value='';
+  document.getElementById('win-tg-input').value=getWinnerTelegram(name);
   document.getElementById('win-site-input').value='---';
   resetWinnerCoinState();
   document.getElementById('winner-screen').classList.add('open');
@@ -830,13 +864,12 @@ function renderWinnerHistory(name){
   var cont=document.getElementById('win-drop-history');
   if(!cont||!name)return;
   var hist=winnerHistory[name.toLowerCase()]||[];
-  var sortedHist=hist.slice().sort(function(a,b){
-    var diff=(Number(b.amount)||0)-(Number(a.amount)||0);
-    if(diff!==0)return diff;
-    diff=(Number(b.deposit)||0)-(Number(a.deposit)||0);
-    if(diff!==0)return diff;
-    return parseHistoryDate(b.date)-parseHistoryDate(a.date);
-  });
+  var sortedHist=hist.map(function(item,index){
+    return{item:item,index:index,eventTime:getHistoryEventTime(hist,index)};
+  }).sort(function(a,b){
+    var diff=b.eventTime-a.eventTime;
+    return diff||b.index-a.index;
+  }).map(function(entry){return entry.item;});
   cont.innerHTML=sortedHist.map(function(h){
     if(h.isReroll)return'<div class="hist-row"><span style="color:#f59e0b;font-weight:bold;">🔄 БЫЛ РЕРОЛЬНУТ</span></div>';
     var date=(h.date||'---');
@@ -851,6 +884,7 @@ function saveWinnerStats(){
   var amt=parseFloat(document.getElementById('win-amount-input').value)||0;
   var dep=parseFloat(document.getElementById('win-deposit-input').value)||0;
   var tg=document.getElementById('win-tg-input').value.trim();
+  saveWinnerTelegram();
   if(amt>0||dep>0){
     var key=currentWinner.toLowerCase();
     if(!winnerHistory[key])winnerHistory[key]=[];
@@ -1065,6 +1099,21 @@ function connect(){
     else if(d.charAt(0)==='@'){var p=d.split(' ');user=p[1].split('!')[0].substring(1);}
     else{user=d.split('!')[0].substring(1);}
     msg=d.split(mk)[1].trim();
+
+    var userKey=user.trim().toLowerCase();
+    if(Object.prototype.hasOwnProperty.call(tags,'badges')||Object.prototype.hasOwnProperty.call(tags,'mod')){
+      var badgeList=(tags['badges']||'').split(',');
+      var hasVipBadge=badgeList.some(function(badge){return /^vip\//i.test(badge);});
+      var hasModeratorBadge=tags['mod']==='1'||badgeList.some(function(badge){return /^(moderator|broadcaster)\//i.test(badge);});
+      if(hasVipBadge)vipParticipants.add(userKey);else vipParticipants.delete(userKey);
+      if(hasModeratorBadge)moderatorParticipants.add(userKey);else moderatorParticipants.delete(userKey);
+      if(hasVipBadge||hasModeratorBadge)privilegedParticipants.add(userKey);else privilegedParticipants.delete(userKey);
+      try{
+        localStorage.setItem('bib4ek_vip_participants',JSON.stringify(Array.from(vipParticipants)));
+        localStorage.setItem('bib4ek_moderator_participants',JSON.stringify(Array.from(moderatorParticipants)));
+        localStorage.setItem('bib4ek_privileged_participants',JSON.stringify(Array.from(privilegedParticipants)));
+      }catch(e){}
+    }
 
     if(msg.trim().toLowerCase()===code.toLowerCase()&&!parts.has(user)){parts.add(user);render();}
 
