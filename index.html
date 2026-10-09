@@ -73,6 +73,11 @@ iframe{width:100%;height:100%;display:block;border:0;background:#0a1510;opacity:
 .tablebox h3{margin:0;color:var(--accent);font-size:14px;letter-spacing:1.5px;text-transform:uppercase;text-align:center}
 .search{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(74,222,128,.2);background:rgba(0,0,0,.2);color:var(--text);font-size:13px;outline:none;transition:.2s}
 .search:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(74,222,128,.1)}
+.wheel-stats-table th .stats-sort{width:100%;padding:0;border:0;background:transparent;color:var(--accent);font:inherit;font-weight:800;cursor:pointer;text-align:inherit;white-space:nowrap}
+.wheel-stats-table th .stats-sort:hover{color:#fff}
+.wheel-stats-table th .sort-indicator{display:inline-block;min-width:10px;margin-left:3px;color:#fff}
+.stats-filter{display:flex;align-items:center;gap:6px;white-space:nowrap;color:var(--text);font-size:11px;cursor:pointer}
+.stats-filter input{accent-color:var(--accent);margin:0}
 .code-row{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.15);border-radius:8px;padding:6px 10px}
 .code-row label{color:var(--accent);font-size:11px;font-weight:700;text-transform:uppercase;white-space:nowrap}
 .code-row input{flex:1;padding:4px;border:none;background:transparent;color:var(--text);font-size:14px;font-weight:800;text-align:center;outline:none}
@@ -202,6 +207,33 @@ iframe{width:100%;height:100%;display:block;border:0;background:#0a1510;opacity:
 .win-form select:focus{border-color:rgba(74,222,128,.5);box-shadow:0 0 0 2px rgba(74,222,128,.1)}
 .win-form .pbtn{margin-top:4px}
 .win-form .reset{margin-top:3px}
+.coin-wrap{position:relative;width:88px;height:88px;perspective:900px;margin:0 auto}
+.coin{position:relative;width:88px;height:88px;transform-style:preserve-3d;border-radius:50%;transition:transform .9s ease;box-shadow:0 12px 25px rgba(0,0,0,.5),0 0 18px rgba(249,217,118,.2)}
+.coin-face{position:absolute;inset:0;border-radius:50%;backface-visibility:hidden;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;letter-spacing:1px}
+.coin-front{background:radial-gradient(circle at 32% 27%,#fff1a8 0,#f9d976 28%,#d88905 100%);color:#3d2600;border:3px solid #ffedaa;box-shadow:inset 0 0 0 3px rgba(135,82,0,.3),inset 0 7px 13px rgba(255,255,255,.4),inset 0 -9px 14px rgba(112,61,0,.35);text-shadow:0 1px 0 rgba(255,255,255,.4)}
+.coin-back{background:radial-gradient(circle at 32% 27%,#b7ffd0 0,#4ade80 30%,#08783d 100%);color:#07351e;border:3px solid #b7ffd0;box-shadow:inset 0 0 0 3px rgba(0,75,35,.3),inset 0 7px 13px rgba(255,255,255,.35),inset 0 -9px 14px rgba(0,55,26,.35);text-shadow:0 1px 0 rgba(255,255,255,.35);transform:rotateY(180deg)}
+.coin.animating-win{animation:coinSpinWin 2.2s cubic-bezier(.16,.76,.22,1) both}
+.coin.animating-lose{animation:coinSpinLose 2.2s cubic-bezier(.16,.76,.22,1) both}
+.coin.outcome-win{transform:rotateY(1800deg)}
+.coin.outcome-lose{transform:rotateY(1980deg)}
+@keyframes coinSpinWin{0%{transform:translateY(0) rotateY(0deg) rotateX(0deg)}28%{transform:translateY(-10px) rotateY(540deg) rotateX(18deg)}68%{transform:translateY(-5px) rotateY(1350deg) rotateX(-10deg)}92%{transform:translateY(1px) rotateY(1810deg) rotateX(2deg)}100%{transform:translateY(0) rotateY(1800deg) rotateX(0deg)}}
+@keyframes coinSpinLose{0%{transform:translateY(0) rotateY(0deg) rotateX(0deg)}28%{transform:translateY(-10px) rotateY(540deg) rotateX(18deg)}68%{transform:translateY(-5px) rotateY(1350deg) rotateX(-10deg)}92%{transform:translateY(1px) rotateY(1990deg) rotateX(2deg)}100%{transform:translateY(0) rotateY(1980deg) rotateX(0deg)}}
+.coin-result{min-height:18px;font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;text-align:center}
+.coin-result.win{color:#4ade80}
+.coin-result.lose{color:#f59e0b}
+.coin-action{width:100%;padding:8px 10px;border-radius:10px;background:transparent;color:var(--accent);font-weight:800;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:.25s;border:1px solid rgba(74,222,128,.3);display:none}
+.coin-action.visible{display:block}
+.coin-action.success{background:rgba(74,222,128,.15);border-color:var(--accent);color:var(--accent)}
+.coin-action.fail{background:rgba(245,158,11,.12);border-color:#f59e0b;color:#f59e0b}
+.coin-action.toss{background:linear-gradient(180deg,var(--accent),#22c55e);border-color:var(--accent);color:#0f1e16}
+.coin-action:disabled{opacity:.55;cursor:wait}
+.coin-modal{display:none;position:fixed;inset:0;z-index:11000;background:rgba(0,0,0,.72);align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.coin-modal.open{display:flex}
+.coin-menu{position:relative;width:280px;max-width:calc(100vw - 32px);display:flex;flex-direction:column;align-items:center;gap:12px;padding:24px;background:var(--panel);border:1px solid rgba(74,222,128,.35);border-radius:16px;box-shadow:0 20px 70px rgba(0,0,0,.65),0 0 35px rgba(74,222,128,.16)}
+.coin-menu h3{margin:0;color:var(--accent);font-size:14px;text-transform:uppercase}
+.coin-menu .coin-wrap{width:120px;height:120px}
+.coin-menu .coin{width:120px;height:120px}
+.coin-menu .coin-face{font-size:22px}
 </style>
 </head>
 <body>
@@ -309,6 +341,7 @@ iframe{width:100%;height:100%;display:block;border:0;background:#0a1510;opacity:
     <h3>СТАТИСТИКА РУЛЕТКИ</h3>
     <div class="search-row" style="display:flex;gap:8px;margin-bottom:10px">
       <input class="search" id="wheelStatsSearch" placeholder="Поиск по нику..." oninput="renderWheelStats()" style="flex:1">
+      <label class="stats-filter"><input id="wheelStatsHideRerolls" type="checkbox" checked onchange="toggleWheelStatsRerollFilter()">Без рероллов</label>
     </div>
     <div class="wheel-stats-table" style="max-height:60vh;overflow-y:auto">
       <table style="width:100%;border-collapse:collapse;font-size:12px">
@@ -316,10 +349,10 @@ iframe{width:100%;height:100%;display:block;border:0;background:#0a1510;opacity:
           <tr style="border-bottom:2px solid var(--accent)">
             <th style="padding:8px;text-align:left;color:var(--accent)">Ник</th>
             <th style="padding:8px;text-align:left;color:var(--accent)">Сайт</th>
-            <th style="padding:8px;text-align:right;color:var(--accent)">Вывод</th>
-            <th style="padding:8px;text-align:right;color:var(--accent)">Деп</th>
+            <th data-sort-key="amount" style="padding:8px;text-align:right;color:var(--accent)"><button class="stats-sort" type="button" onclick="sortWheelStats('amount')">Вывод<span class="sort-indicator"></span></button></th>
+            <th data-sort-key="deposit" style="padding:8px;text-align:right;color:var(--accent)"><button class="stats-sort" type="button" onclick="sortWheelStats('deposit')">Деп<span class="sort-indicator"></span></button></th>
             <th style="padding:8px;text-align:left;color:var(--accent)">Telegram</th>
-            <th style="padding:8px;text-align:left;color:var(--accent)">Дата</th>
+            <th data-sort-key="date" style="padding:8px;text-align:left;color:var(--accent)"><button class="stats-sort" type="button" onclick="sortWheelStats('date')">Дата<span class="sort-indicator"></span></button></th>
           </tr>
         </thead>
         <tbody id="wheelStatsBody"></tbody>
@@ -367,11 +400,29 @@ iframe{width:100%;height:100%;display:block;border:0;background:#0a1510;opacity:
           <option value="VirusDrop">VirusDrop</option>
           <option value="PokeDrop">PokeDrop</option>
         </select>
+        <button class="pbtn" type="button" onclick="openWinnerCoin()">МОНЕТКА</button>
         <button class="pbtn" onclick="saveWinnerStats()" style="margin-top:10px">СОХРАНИТЬ 📊</button>
         <button class="reset" onclick="closeWinnerScreen()">ЗАКРЫТЬ</button>
         <button class="reset" style="background:rgba(245,158,11,0.15);border-color:#f59e0b;color:#f59e0b;" onclick="reSpinToHome()">ПЕРЕКРУТИТЬ</button>
       </div>
     </div>
+  </div>
+</div>
+
+<div id="winnerCoinModal" class="coin-modal" role="dialog" aria-modal="true" aria-labelledby="winnerCoinTitle" onclick="if(event.target===this)closeWinnerCoin()">
+  <div class="coin-menu">
+    <div class="close-x" onclick="closeWinnerCoin()">&times;</div>
+    <h3 id="winnerCoinTitle">Монетка</h3>
+    <div class="coin-wrap" aria-live="polite">
+      <div class="coin" id="winnerCoin">
+        <div class="coin-face coin-front">Орёл</div>
+        <div class="coin-face coin-back">Решка</div>
+      </div>
+    </div>
+    <div id="coinResult" class="coin-result"></div>
+    <button id="winnerCoinToss" class="coin-action toss visible" type="button" onclick="tossWinnerCoin()">БРОСИТЬ!</button>
+    <button id="winnerCoinConfirm" class="coin-action success" type="button" onclick="confirmWinnerCoin()">ПОДТВЕРДИТЬ</button>
+    <button id="winnerCoinReroll" class="coin-action fail" type="button" onclick="rerollWinnerCoin()">РЕРОЛ</button>
   </div>
 </div>
 
@@ -607,21 +658,105 @@ function startSpin(mode){
 function getRandomParticipant(){return wheelParticipants[Math.floor(Math.random()*wheelParticipants.length)];}
 
 // WHEEL STATISTICS FUNCTIONS
+var wheelStatsSort={key:'amount',direction:'desc'};
+
 function openWheelStats(){renderWheelStats();document.getElementById('wheelStatsModal').classList.add('open');}
 function closeWheelStats(){document.getElementById('wheelStatsModal').classList.remove('open');}
+function sortWheelStats(key){
+  if(wheelStatsSort.key===key){
+    wheelStatsSort.direction=wheelStatsSort.direction==='asc'?'desc':'asc';
+  }else{
+    wheelStatsSort.key=key;
+    wheelStatsSort.direction='desc';
+  }
+  renderWheelStats();
+}
+
+function toggleWheelStatsRerollFilter(){
+  var hideRerolls=document.getElementById('wheelStatsHideRerolls').checked;
+  if(hideRerolls&&wheelStatsSort.key==='date'){
+    wheelStatsSort={key:'amount',direction:'desc'};
+  }else if(!hideRerolls){
+    wheelStatsSort={key:'date',direction:'asc'};
+  }
+  renderWheelStats();
+}
+
+function updateWheelStatsSortHeaders(){
+  document.querySelectorAll('.wheel-stats-table th[data-sort-key]').forEach(function(th){
+    var active=th.getAttribute('data-sort-key')===wheelStatsSort.key;
+    var indicator=th.querySelector('.sort-indicator');
+    if(indicator)indicator.textContent=active?(wheelStatsSort.direction==='asc'?'↑':'↓'):'';
+    th.setAttribute('aria-sort',active?(wheelStatsSort.direction==='asc'?'ascending':'descending'):'none');
+  });
+}
+
+function parseHistoryDate(value){
+  if(!value||value==='---')return 0;
+  var match=String(value).match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+  if(!match)return 0;
+  var day=parseInt(match[1],10), month=parseInt(match[2],10), year=parseInt(match[3],10), hour=parseInt(match[4]||'0',10), minute=parseInt(match[5]||'0',10), second=parseInt(match[6]||'0',10);
+  var d=new Date(year, month-1, day, hour, minute, second);
+  return isNaN(d.getTime())?0:d.getTime();
+}
+
+function getHistoryEventTime(history,index){
+  var item=history[index];
+  var date=String(item.date||'');
+  var timestamp=parseHistoryDate(date);
+  if(!item.isReroll||/\s+\d{1,2}:\d{2}/.test(date))return timestamp;
+
+  var dateOnly=date.split(/\s+/)[0];
+  var previousIndex=-1,nextIndex=-1,previousTime=0,nextTime=0;
+  for(var i=index-1;i>=0;i--){
+    var previous=history[i];
+    if(!previous.isReroll&&String(previous.date||'').indexOf(dateOnly+' ')===0){
+      previousIndex=i;
+      previousTime=parseHistoryDate(previous.date);
+      break;
+    }
+  }
+  for(var j=index+1;j<history.length;j++){
+    var next=history[j];
+    if(!next.isReroll&&String(next.date||'').indexOf(dateOnly+' ')===0){
+      nextIndex=j;
+      nextTime=parseHistoryDate(next.date);
+      break;
+    }
+  }
+  if(previousIndex>=0&&nextIndex>=0){
+    return previousTime+(nextTime-previousTime)*(index-previousIndex)/(nextIndex-previousIndex);
+  }
+  if(previousIndex>=0)return previousTime+(index-previousIndex);
+  if(nextIndex>=0)return nextTime-(nextIndex-index);
+  return timestamp;
+}
+
 function renderWheelStats(){
   var q=document.getElementById('wheelStatsSearch').value.trim().toLowerCase();
+  var hideRerolls=document.getElementById('wheelStatsHideRerolls').checked;
   var body=document.getElementById('wheelStatsBody');
   body.innerHTML='';
+  updateWheelStatsSortHeaders();
   var rows=[];
   Object.keys(winnerHistory).forEach(function(key){
-    (winnerHistory[key]||[]).forEach(function(h){
-      if(h.isReroll)return;
+    var history=winnerHistory[key]||[];
+    history.forEach(function(h,index){
+      if(h.isReroll&&hideRerolls)return;
       if(q&&key.indexOf(q)<0)return;
-      rows.push({name:key,site:h.site||'---',amount:h.amount||0,deposit:h.deposit||0,tg:h.tg||'---',date:h.date||'---'});
+      rows.push({name:key,site:h.isReroll?'РЕРОЛЛ':(h.site||'---'),amount:h.amount||0,deposit:h.deposit||0,tg:h.tg||'---',date:h.date||'---',eventTime:getHistoryEventTime(history,index)});
     });
   });
-  rows.reverse();
+  rows.sort(function(a,b){
+    var diff=wheelStatsSort.key==='date'?a.eventTime-b.eventTime:(Number(a[wheelStatsSort.key])||0)-(Number(b[wheelStatsSort.key])||0);
+    if(wheelStatsSort.direction==='desc')diff=-diff;
+    if(diff!==0)return diff;
+    diff=(Number(b.amount)||0)-(Number(a.amount)||0);
+    if(diff!==0)return diff;
+    diff=(Number(b.deposit)||0)-(Number(a.deposit)||0);
+    if(diff!==0)return diff;
+    return parseHistoryDate(b.date)-parseHistoryDate(a.date);
+  });
   if(rows.length===0){
     body.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--muted)">Нет данных</td></tr>';
     return;
@@ -675,6 +810,7 @@ function showWinner(name){
   document.getElementById('win-deposit-input').value='';
   document.getElementById('win-tg-input').value='';
   document.getElementById('win-site-input').value='---';
+  resetWinnerCoinState();
   document.getElementById('winner-screen').classList.add('open');
   var hCont=document.getElementById('win-chat-history');
   hCont.innerHTML=(userMessages[name]||[]).map(function(m){return'<div style="padding:5px 0;border-bottom:1px solid rgba(74,222,128,.05);font-size:12px;"><small style="color:var(--muted);">'+m.time+'</small> '+esc(m.text)+'</div>';}).reverse().join('');
@@ -694,9 +830,20 @@ function renderWinnerHistory(name){
   var cont=document.getElementById('win-drop-history');
   if(!cont||!name)return;
   var hist=winnerHistory[name.toLowerCase()]||[];
-  cont.innerHTML=hist.slice().reverse().map(function(h){
+  var sortedHist=hist.slice().sort(function(a,b){
+    var diff=(Number(b.amount)||0)-(Number(a.amount)||0);
+    if(diff!==0)return diff;
+    diff=(Number(b.deposit)||0)-(Number(a.deposit)||0);
+    if(diff!==0)return diff;
+    return parseHistoryDate(b.date)-parseHistoryDate(a.date);
+  });
+  cont.innerHTML=sortedHist.map(function(h){
     if(h.isReroll)return'<div class="hist-row"><span style="color:#f59e0b;font-weight:bold;">🔄 БЫЛ РЕРОЛЬНУТ</span></div>';
-    return'<div class="hist-row"><div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span style="color:var(--muted);font-size:10px;">📅 '+h.date+'</span><span style="color:#fff;font-weight:bold;">'+(h.site||'---')+'</span></div><div style="display:flex;justify-content:space-between;"><span style="color:var(--accent);font-weight:bold;">Вывод: '+(h.amount||0).toLocaleString()+' ₽</span><span style="color:#fff;font-weight:bold;">Деп: '+(h.deposit||0).toLocaleString()+' ₽</span></div></div>';
+    var date=(h.date||'---');
+    var site=(h.site||'---');
+    var amount=(Number(h.amount)||0).toLocaleString()+' ₽';
+    var deposit=(Number(h.deposit)||0).toLocaleString()+' ₽';
+    return'<div class="hist-row"><div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span style="color:var(--muted);font-size:10px;">ДАТА: '+date+'</span><span style="color:#fff;font-weight:bold;">'+site+'</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;align-items:center;"><span style="color:var(--accent);font-weight:bold;">ВЫВОД: '+amount+'</span><span style="color:#fff;font-weight:bold;">ДЕПЫ: '+deposit+'</span></div></div>';
   }).join('')||'<div style="color:var(--muted);text-align:center;margin-top:20px;">Первая победа!</div>';
 }
 
@@ -724,15 +871,99 @@ function saveWinnerStats(){
   closeWinnerScreen();
 }
 
+function resetWinnerCoinState(){
+  var coin=document.getElementById('winnerCoin');
+  var result=document.getElementById('coinResult');
+  var tossBtn=document.getElementById('winnerCoinToss');
+  var confirmBtn=document.getElementById('winnerCoinConfirm');
+  var rerollBtn=document.getElementById('winnerCoinReroll');
+  if(window.winnerCoinTimeout){clearTimeout(window.winnerCoinTimeout);window.winnerCoinTimeout=null;}
+  window.winnerCoinTossing=false;
+  if(coin)coin.classList.remove('animating-win','animating-lose','outcome-win','outcome-lose');
+  if(result){result.textContent='';result.className='coin-result';}
+  if(tossBtn){tossBtn.classList.remove('visible');tossBtn.disabled=false;}
+  if(confirmBtn)confirmBtn.classList.remove('visible');
+  if(rerollBtn)rerollBtn.classList.remove('visible');
+}
+
+function openWinnerCoin(){
+  if(!currentWinner)return;
+  resetWinnerCoinState();
+  document.getElementById('winnerCoinModal').classList.add('open');
+  document.getElementById('winnerCoinToss').classList.add('visible');
+}
+
+function getCoinFlipOutcome(){
+  if(window.crypto&&window.crypto.getRandomValues){
+    var randomByte=new Uint8Array(1);
+    window.crypto.getRandomValues(randomByte);
+    return randomByte[0]<128;
+  }
+  return Math.random()<0.5;
+}
+
+function tossWinnerCoin(){
+  var modal=document.getElementById('winnerCoinModal');
+  var tossBtn=document.getElementById('winnerCoinToss');
+  if(!modal.classList.contains('open')||window.winnerCoinTossing)return;
+
+  window.winnerCoinTossing=true;
+  tossBtn.disabled=true;
+  tossBtn.classList.remove('visible');
+  var isLucky=getCoinFlipOutcome();
+  var coin=document.getElementById('winnerCoin');
+  if(coin){
+    coin.classList.add(isLucky?'animating-win':'animating-lose');
+  }
+
+  var result=document.getElementById('coinResult');
+  var confirmBtn=document.getElementById('winnerCoinConfirm');
+  var rerollBtn=document.getElementById('winnerCoinReroll');
+
+  window.winnerCoinTimeout=setTimeout(function(){
+    window.winnerCoinTimeout=null;
+    window.winnerCoinTossing=false;
+    if(coin){
+      coin.classList.remove('animating-win','animating-lose');
+      coin.classList.add(isLucky?'outcome-win':'outcome-lose');
+    }
+    if(result){
+      result.textContent=isLucky?'ОРЁЛ — УДАЧА':'РЕШКА — НЕУДАЧА';
+      result.className='coin-result '+(isLucky?'win':'lose');
+    }
+    if(confirmBtn)confirmBtn.classList.toggle('visible',isLucky);
+    if(rerollBtn)rerollBtn.classList.toggle('visible',!isLucky);
+  },2200);
+}
+
+function closeWinnerCoin(){
+  var modal=document.getElementById('winnerCoinModal');
+  if(modal)modal.classList.remove('open');
+  resetWinnerCoinState();
+}
+
+function confirmWinnerCoin(){
+  closeWinnerCoin();
+}
+
+function rerollWinnerCoin(){
+  closeWinnerCoin();
+  reSpinToHome();
+}
+
 function reSpinToHome(){
   rerollCount++;
   if(currentWinner){
     var key=currentWinner.toLowerCase();
     if(!winnerHistory[key])winnerHistory[key]=[];
-    winnerHistory[key].push({amount:0,deposit:0,tg:'',site:'---',date:new Date().toLocaleDateString('ru-RU'),isReroll:true});
+    var rerollDate=new Date();
+    winnerHistory[key].push({amount:0,deposit:0,tg:'',site:'---',date:rerollDate.toLocaleDateString('ru-RU')+' '+rerollDate.toLocaleTimeString('ru-RU'),isReroll:true});
     try{localStorage.setItem('bib4ek_winner_history',JSON.stringify(winnerHistory));}catch(e){}
   }
-  var arr=Array.from(parts);
+  var arr=Array.from(parts).filter(function(name){
+    return !currentWinner||name.toLowerCase()!==currentWinner.toLowerCase();
+  });
+  if(arr.length===0)arr=Array.from(parts);
   if(arr.length===0){closeWinnerScreen();return;}
   showWinner(arr[Math.floor(Math.random()*arr.length)]);
 }
@@ -747,6 +978,7 @@ function editWinnerCounter(type){
 }
 
 function closeWinnerScreen(){
+  closeWinnerCoin();
   document.getElementById('winner-screen').classList.remove('open');
   winTimerActive=false;
   clearInterval(window.winInt);
@@ -757,6 +989,7 @@ function closeWinnerScreen(){
 function closeStats(){document.getElementById('statsModal').classList.remove('show');}
 
 function closeModals(){
+  closeWinnerCoin();
   document.querySelectorAll('.modal').forEach(function(m){m.classList.remove('open');});
   document.getElementById('winner-screen').classList.remove('open');
   winTimerActive=false;
