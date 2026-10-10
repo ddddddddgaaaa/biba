@@ -486,9 +486,9 @@ var winnerMenuOpen=false;
 
 // WHEEL VARIABLES
 var wheelParticipants=[];
-var privilegedParticipants=new Set(JSON.parse(localStorage.getItem('bib4ek_privileged_participants')||'[]'));
-var vipParticipants=new Set(JSON.parse(localStorage.getItem('bib4ek_vip_participants')||'[]'));
-var moderatorParticipants=new Set(JSON.parse(localStorage.getItem('bib4ek_moderator_participants')||'[]'));
+var privilegedParticipants=new Set();
+var vipParticipants=new Set();
+var moderatorParticipants=new Set();
 var isWheelSpinning=false;
 var currentRotation=0;
 var selectedSpinMode='elimination';
@@ -1108,11 +1108,6 @@ function connect(){
       if(hasVipBadge)vipParticipants.add(userKey);else vipParticipants.delete(userKey);
       if(hasModeratorBadge)moderatorParticipants.add(userKey);else moderatorParticipants.delete(userKey);
       if(hasVipBadge||hasModeratorBadge)privilegedParticipants.add(userKey);else privilegedParticipants.delete(userKey);
-      try{
-        localStorage.setItem('bib4ek_vip_participants',JSON.stringify(Array.from(vipParticipants)));
-        localStorage.setItem('bib4ek_moderator_participants',JSON.stringify(Array.from(moderatorParticipants)));
-        localStorage.setItem('bib4ek_privileged_participants',JSON.stringify(Array.from(privilegedParticipants)));
-      }catch(e){}
     }
 
     if(msg.trim().toLowerCase()===code.toLowerCase()&&!parts.has(user)){parts.add(user);render();}
