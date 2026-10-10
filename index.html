@@ -785,11 +785,16 @@ function startNeverWonRoll(){
   document.getElementById('winnerOptions').classList.remove('show');
   winnerMenuOpen=false;
   var eligible=Array.from(parts).filter(function(name){
-    var history=winnerHistory[name.trim().toLowerCase()]||[];
-    return !history.some(function(entry){return !entry.isReroll;});
+    var key=name.trim().toLowerCase();
+    var history=winnerHistory[key]||[];
+    var hasWonInStats=statistics.some(function(session){return String(session.winner||'').trim().toLowerCase()===key;});
+    return !neverWonRollParticipants.has(key)&&!hasWonInStats&&!history.some(function(entry){return !entry.isReroll;});
   });
   if(eligible.length===0){alert('Нет участников без предыдущих побед.');return;}
-  showWinner(eligible[Math.floor(Math.random()*eligible.length)]);
+  var winner=eligible[Math.floor(Math.random()*eligible.length)];
+  neverWonRollParticipants.add(winner.trim().toLowerCase());
+  try{localStorage.setItem('bib4ek_never_won_roll_participants',JSON.stringify(Array.from(neverWonRollParticipants)));}catch(e){}
+  showWinner(winner);
 }
 function startRoleRoll(roleSet,label){
   document.getElementById('winnerOptions').classList.remove('show');
@@ -805,6 +810,7 @@ function startPrivilegedRoll(){startRoleRoll(privilegedParticipants,'с VIP-бе
 // WINNER SCREEN VARIABLES (from eneeergyshow mechanics)
 var winTimerActive=false;
 var winnerHistory=JSON.parse(localStorage.getItem('bib4ek_winner_history')||'{}');
+var neverWonRollParticipants=new Set(JSON.parse(localStorage.getItem('bib4ek_never_won_roll_participants')||'[]'));
 var winnerTelegramProfiles=JSON.parse(localStorage.getItem('bib4ek_telegram_profiles')||'{}');
 var userMessages={};
 var rerollCount=0;
