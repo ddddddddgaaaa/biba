@@ -270,6 +270,7 @@ iframe{width:100%;height:100%;display:block;border:0;background:#0a1510;opacity:
     <div class="winner-options" id="winnerOptions">
       <button class="winner-opt" onclick="openWheel()">РУЛЕТКА</button>
       <button class="winner-opt" onclick="startQuickRoll()">БЫСТРЫЙ РОЛ</button>
+      <button class="winner-opt" onclick="startNeverWonRoll()">ДЛЯ ТЕХ КТО НИКОГДА НЕ ВЫИГРЫВАЛ</button>
       <button class="winner-opt" onclick="startVipRoll()">РОЛЛ ТОЛЬКО VIP</button>
       <button class="winner-opt" onclick="startModeratorRoll()">РОЛЛ ТОЛЬКО МОДЕРЫ</button>
       <button class="winner-opt" onclick="startPrivilegedRoll()">РОЛЛ VIP + МОДЕРЫ</button>
@@ -780,6 +781,16 @@ function renderWheelStats(){
 }
 
 function startQuickRoll(){if(parts.size===0){alert('Нет участников!');return;}var arr=Array.from(parts);showWinner(arr[Math.floor(Math.random()*arr.length)]);}
+function startNeverWonRoll(){
+  document.getElementById('winnerOptions').classList.remove('show');
+  winnerMenuOpen=false;
+  var eligible=Array.from(parts).filter(function(name){
+    var history=winnerHistory[name.trim().toLowerCase()]||[];
+    return !history.some(function(entry){return !entry.isReroll;});
+  });
+  if(eligible.length===0){alert('Нет участников без предыдущих побед.');return;}
+  showWinner(eligible[Math.floor(Math.random()*eligible.length)]);
+}
 function startRoleRoll(roleSet,label){
   document.getElementById('winnerOptions').classList.remove('show');
   winnerMenuOpen=false;
