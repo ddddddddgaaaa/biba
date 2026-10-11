@@ -490,7 +490,7 @@ var wheelParticipants=[];
 var vipParticipants=new Set('badgeerrr,del25cmvpope,eirents,fra1pi,im_chillest,isebearww,lity____,ludogoroh,mouse_geroy1014,otmorozok812,pikxi200,plusvibeee,rampudge,rob1nfall,sun_badger123,uglymaster1,whatwhytwoo,wokomilka,zugo112'.split(','));
 var moderatorParticipants=new Set('86rusboroda,fossabot,jeetbot,keh3a322,nightbot,pdpdppdpdpd11,skandalist39,viix999,wokomilka,zootix1337'.split(','));
 var privilegedParticipants=new Set(Array.from(vipParticipants).concat(Array.from(moderatorParticipants)));
-var participantLoginByName={};
+var participantLoginByName=JSON.parse(localStorage.getItem('bib4ek_participant_logins')||'{}');
 var isWheelSpinning=false;
 var currentRotation=0;
 var selectedSpinMode='elimination';
@@ -821,8 +821,8 @@ function getRoleRollEligibleParticipants(roleSet,excludedName){
   });
 }
 function startVipRoll(){startRoleRoll(vipParticipants,'с VIP-бейджем');}
-function startModeratorRoll(){startRoleRoll(moderatorParticipants,'с бейджем модератора');}
-function startPrivilegedRoll(){startRoleRoll(privilegedParticipants,'с VIP-бейджем или бейджем модератора');}
+function startModeratorRoll(){startRoleRoll(moderatorParticipants,'модер');}
+function startPrivilegedRoll(){startRoleRoll(privilegedParticipants,'випер и модер');}
 
 // WINNER SCREEN VARIABLES (from eneeergyshow mechanics)
 var winTimerActive=false;
@@ -1034,7 +1034,7 @@ function reSpinToHome(){
   if(currentWinnerRollMode==='role'){
     arr=getRoleRollEligibleParticipants(currentWinnerRoleSet,currentWinner);
     if(arr.length===0){
-      alert('Нет других участников из этого списка, которые ввели кодовое слово.');
+      alert('Нет других модераторов которые участвуют');
       closeWinnerScreen();
       return;
     }
@@ -1166,6 +1166,7 @@ function connect(){
     var loginMatch=d.match(/(?:^| ):([^ !]+)!/);
     var loginKey=(tags['login']||(loginMatch&&loginMatch[1])||user).trim().toLowerCase();
     participantLoginByName[userKey]=loginKey;
+    try{localStorage.setItem('bib4ek_participant_logins',JSON.stringify(participantLoginByName));}catch(e){}
 
     if(msg.trim().toLowerCase()===code.toLowerCase()&&!parts.has(user)){parts.add(user);render();}
 
