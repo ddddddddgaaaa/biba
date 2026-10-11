@@ -636,6 +636,7 @@ function startSpin(mode){
       drawWheel(endAngle);
       isWheelSpinning=false;
       if(mode==='normal'){
+        currentWinnerRollMode='all';
         showWinner(winner);
         document.getElementById('spinBtn').disabled=false;
       }else{
@@ -646,6 +647,7 @@ function startSpin(mode){
         }else if(wheelParticipants.length===1){
           setTimeout(function(){
             drawWheel(0);
+            currentWinnerRollMode='all';
             showWinner(wheelParticipants[0]);
             document.getElementById('spinBtn').disabled=false;
           },1500);
@@ -780,20 +782,24 @@ function renderWheelStats(){
   }).join('');
 }
 
-function startQuickRoll(){if(parts.size===0){alert('Нет участников!');return;}var arr=Array.from(parts);showWinner(arr[Math.floor(Math.random()*arr.length)]);}
-function startNeverWonRoll(){
-  document.getElementById('winnerOptions').classList.remove('show');
-  winnerMenuOpen=false;
-  var eligible=Array.from(parts).filter(function(name){
+function getNeverWonRollEligibleParticipants(){
+  return Array.from(parts).filter(function(name){
     var key=name.trim().toLowerCase();
     var history=winnerHistory[key]||[];
     var hasWonInStats=statistics.some(function(session){return String(session.winner||'').trim().toLowerCase()===key;});
     return !neverWonRollParticipants.has(key)&&!hasWonInStats&&!history.some(function(entry){return !entry.isReroll;});
   });
+}
+function startQuickRoll(){if(parts.size===0){alert('Нет участников!');return;}currentWinnerRollMode='all';var arr=Array.from(parts);showWinner(arr[Math.floor(Math.random()*arr.length)]);}
+function startNeverWonRoll(){
+  document.getElementById('winnerOptions').classList.remove('show');
+  winnerMenuOpen=false;
+  var eligible=getNeverWonRollEligibleParticipants();
   if(eligible.length===0){alert('Нет участников без предыдущих побед.');return;}
   var winner=eligible[Math.floor(Math.random()*eligible.length)];
   neverWonRollParticipants.add(winner.trim().toLowerCase());
   try{localStorage.setItem('bib4ek_never_won_roll_participants',JSON.stringify(Array.from(neverWonRollParticipants)));}catch(e){}
+  currentWinnerRollMode='never-won';
   showWinner(winner);
 }
 function startRoleRoll(roleSet,label){
@@ -801,6 +807,7 @@ function startRoleRoll(roleSet,label){
   winnerMenuOpen=false;
   var eligible=Array.from(parts).filter(function(name){return roleSet.has(name.trim().toLowerCase());});
   if(eligible.length===0){alert('Нет участников '+label+'. Они должны написать кодовое слово в чат.');return;}
+  currentWinnerRollMode='all';
   showWinner(eligible[Math.floor(Math.random()*eligible.length)]);
 }
 function startVipRoll(){startRoleRoll(vipParticipants,'с VIP-бейджем');}
@@ -814,6 +821,7 @@ var neverWonRollParticipants=new Set(JSON.parse(localStorage.getItem('bib4ek_nev
 var winnerTelegramProfiles=JSON.parse(localStorage.getItem('bib4ek_telegram_profiles')||'{}');
 var userMessages={};
 var rerollCount=0;
+var currentWinnerRollMode='all';
 
 function getWinnerTelegram(name){
   var key=String(name||'').trim().toLowerCase();
@@ -1011,7 +1019,21 @@ function reSpinToHome(){
     winnerHistory[key].push({amount:0,deposit:0,tg:'',site:'---',date:rerollDate.toLocaleDateString('ru-RU')+' '+rerollDate.toLocaleTimeString('ru-RU'),isReroll:true});
     try{localStorage.setItem('bib4ek_winner_history',JSON.stringify(winnerHistory));}catch(e){}
   }
-  var arr=Array.from(parts).filter(function(name){
+  var arr;
+  if(currentWinnerRollMode==='never-won'){
+    arr=getNeverWonRollEligibleParticipants();
+    if(arr.length===0){
+      alert('Нет участников без предыдущих побед.');
+      closeWinnerScreen();
+      return;
+    }
+    var nextWinner=arr[Math.floor(Math.random()*arr.length)];
+    neverWonRollParticipants.add(nextWinner.trim().toLowerCase());
+    try{localStorage.setItem('bib4ek_never_won_roll_participants',JSON.stringify(Array.from(neverWonRollParticipants)));}catch(e){}
+    showWinner(nextWinner);
+    return;
+  }
+  arr=Array.from(parts).filter(function(name){
     return !currentWinner||name.toLowerCase()!==currentWinner.toLowerCase();
   });
   if(arr.length===0)arr=Array.from(parts);
@@ -1035,6 +1057,7 @@ function closeWinnerScreen(){
   clearInterval(window.winInt);
   currentWinner=null;
   currentSession=null;
+  currentWinnerRollMode='all';
 }
 
 function closeStats(){document.getElementById('statsModal').classList.remove('show');}
