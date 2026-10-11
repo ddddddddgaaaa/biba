@@ -487,9 +487,11 @@ var winnerMenuOpen=false;
 
 // WHEEL VARIABLES
 var wheelParticipants=[];
-var privilegedParticipants=new Set();
-var vipParticipants=new Set();
-var moderatorParticipants=new Set();
+var vipParticipants=new Set('badgeerrr,del25cmvpope,eirents,fra1pi,im_chillest,isebearww,lity____,ludogoroh,mouse_geroy1014,otmorozok812,pikxi200,plusvibeee,rampudge,rob1nfall,sun_badger123,uglymaster1,whatwhytwoo,wokomilka,zugo112'.split(','));
+var moderatorParticipants=new Set('86rusboroda,fossabot,jeetbot,keh3a322,nightbot,pdpdppdpdpd11,skandalist39,viix999,wokomilka,zootix1337'.split(','));
+var privilegedParticipants=new Set(Array.from(vipParticipants).concat(Array.from(moderatorParticipants)));
+var participantLoginByName={};
+var codeParticipants=new Set();
 var isWheelSpinning=false;
 var currentRotation=0;
 var selectedSpinMode='elimination';
@@ -805,7 +807,12 @@ function startNeverWonRoll(){
 function startRoleRoll(roleSet,label){
   document.getElementById('winnerOptions').classList.remove('show');
   winnerMenuOpen=false;
-  var eligible=Array.from(parts).filter(function(name){return roleSet.has(name.trim().toLowerCase());});
+  var eligible=Array.from(parts).filter(function(name){
+    var key=name.trim().toLowerCase();
+    var login=participantLoginByName[key]||key;
+    var isCodeParticipant=codeParticipants.has(key)||codeParticipants.has(login);
+    return isCodeParticipant&&(roleSet.has(key)||roleSet.has(login));
+  });
   if(eligible.length===0){alert('Нет участников '+label+'. Они должны написать кодовое слово в чат.');return;}
   currentWinnerRollMode='all';
   showWinner(eligible[Math.floor(Math.random()*eligible.length)]);
@@ -1141,16 +1148,15 @@ function connect(){
     msg=d.split(mk)[1].trim();
 
     var userKey=user.trim().toLowerCase();
-    if(Object.prototype.hasOwnProperty.call(tags,'badges')||Object.prototype.hasOwnProperty.call(tags,'mod')){
-      var badgeList=(tags['badges']||'').split(',');
-      var hasVipBadge=badgeList.some(function(badge){return /^vip\//i.test(badge);});
-      var hasModeratorBadge=tags['mod']==='1'||badgeList.some(function(badge){return /^(moderator|broadcaster)\//i.test(badge);});
-      if(hasVipBadge)vipParticipants.add(userKey);else vipParticipants.delete(userKey);
-      if(hasModeratorBadge)moderatorParticipants.add(userKey);else moderatorParticipants.delete(userKey);
-      if(hasVipBadge||hasModeratorBadge)privilegedParticipants.add(userKey);else privilegedParticipants.delete(userKey);
-    }
+    var loginMatch=d.match(/(?:^| ):([^ !]+)!/);
+    var loginKey=(tags['login']||(loginMatch&&loginMatch[1])||user).trim().toLowerCase();
+    participantLoginByName[userKey]=loginKey;
 
-    if(msg.trim().toLowerCase()===code.toLowerCase()&&!parts.has(user)){parts.add(user);render();}
+    if(msg.trim().toLowerCase()===code.toLowerCase()){
+      codeParticipants.add(userKey);
+      codeParticipants.add(loginKey);
+      if(!parts.has(user)){parts.add(user);render();}
+    }
 
     var time=new Date().toLocaleTimeString();
     var msgId=tags['id']||null;
