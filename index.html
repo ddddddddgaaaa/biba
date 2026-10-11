@@ -807,15 +807,20 @@ function startNeverWonRoll(){
 function startRoleRoll(roleSet,label){
   document.getElementById('winnerOptions').classList.remove('show');
   winnerMenuOpen=false;
-  var eligible=Array.from(parts).filter(function(name){
+  var eligible=getRoleRollEligibleParticipants(roleSet);
+  if(eligible.length===0){alert('Нет участников '+label+'. Они должны написать кодовое слово в чат.');return;}
+  currentWinnerRollMode='role';
+  currentWinnerRoleSet=roleSet;
+  showWinner(eligible[Math.floor(Math.random()*eligible.length)]);
+}
+function getRoleRollEligibleParticipants(roleSet,excludedName){
+  return Array.from(parts).filter(function(name){
     var key=name.trim().toLowerCase();
     var login=participantLoginByName[key]||key;
     var isCodeParticipant=codeParticipants.has(key)||codeParticipants.has(login);
-    return isCodeParticipant&&(roleSet.has(key)||roleSet.has(login));
+    var isExcluded=excludedName&&key===excludedName.trim().toLowerCase();
+    return !isExcluded&&isCodeParticipant&&(roleSet.has(key)||roleSet.has(login));
   });
-  if(eligible.length===0){alert('Нет участников '+label+'. Они должны написать кодовое слово в чат.');return;}
-  currentWinnerRollMode='all';
-  showWinner(eligible[Math.floor(Math.random()*eligible.length)]);
 }
 function startVipRoll(){startRoleRoll(vipParticipants,'с VIP-бейджем');}
 function startModeratorRoll(){startRoleRoll(moderatorParticipants,'с бейджем модератора');}
@@ -829,6 +834,7 @@ var winnerTelegramProfiles=JSON.parse(localStorage.getItem('bib4ek_telegram_prof
 var userMessages={};
 var rerollCount=0;
 var currentWinnerRollMode='all';
+var currentWinnerRoleSet=null;
 
 function getWinnerTelegram(name){
   var key=String(name||'').trim().toLowerCase();
@@ -1027,6 +1033,16 @@ function reSpinToHome(){
     try{localStorage.setItem('bib4ek_winner_history',JSON.stringify(winnerHistory));}catch(e){}
   }
   var arr;
+  if(currentWinnerRollMode==='role'){
+    arr=getRoleRollEligibleParticipants(currentWinnerRoleSet,currentWinner);
+    if(arr.length===0){
+      alert('Нет других участников из этого списка, которые ввели кодовое слово.');
+      closeWinnerScreen();
+      return;
+    }
+    showWinner(arr[Math.floor(Math.random()*arr.length)]);
+    return;
+  }
   if(currentWinnerRollMode==='never-won'){
     arr=getNeverWonRollEligibleParticipants();
     if(arr.length===0){
@@ -1065,6 +1081,7 @@ function closeWinnerScreen(){
   currentWinner=null;
   currentSession=null;
   currentWinnerRollMode='all';
+  currentWinnerRoleSet=null;
 }
 
 function closeStats(){document.getElementById('statsModal').classList.remove('show');}
