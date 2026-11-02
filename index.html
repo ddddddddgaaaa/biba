@@ -124,6 +124,21 @@ iframe{width:100%;height:100%;display:block;border:0;background:#0a1510;opacity:
 .winner-opt:hover{background:rgba(74,222,128,.15);border-color:var(--accent)}
 @media(max-width:900px){.app{flex-direction:column;height:auto}.side{width:90vw;max-width:540px}}
 
+/* NEW HORIZONTAL ROULETTE */
+.nr-title{margin:0;color:var(--accent);font-size:15px;font-weight:900;letter-spacing:2px;text-transform:uppercase;text-align:center}
+.nr-count{color:var(--muted);font-size:11px;letter-spacing:1px;text-transform:uppercase;text-align:center}
+.nr-stage{position:relative;width:100%;padding-top:42px}
+.nr-arrow{position:absolute;top:0;left:50%;transform:translateX(-50%);width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-top:36px solid #fff;filter:drop-shadow(0 0 10px rgba(74,222,128,.8));z-index:5}
+.nr-window{position:relative;overflow:hidden;width:800px;max-width:100%;height:160px;margin:0 auto;background:#0a1510;border:3px solid var(--accent);border-radius:16px;box-shadow:inset 0 0 30px rgba(0,0,0,.6);transition:opacity .18s ease}
+.nr-strip{position:relative;display:flex;height:100%;will-change:transform}
+.nr-cell{flex:0 0 160px;height:100%;box-sizing:border-box;margin-right:16px;border-radius:14px;display:flex;align-items:center;justify-content:center;padding:12px;background:linear-gradient(145deg,#1d3829,#112219);border:1px solid rgba(74,222,128,.3);color:#fff;font-weight:800;font-size:18px;word-break:break-word;text-align:center}
+.nr-cell.is-winner{background:linear-gradient(145deg,var(--accent),#86efac);border-color:#fff;transform:scale(1.07);box-shadow:0 0 24px var(--accent)}
+#new-roulette-result{min-height:44px;font-size:26px;font-weight:900;color:var(--accent);text-align:center;text-shadow:0 0 24px rgba(74,222,128,.8)}
+.nr-confirm{display:none;background:linear-gradient(180deg,var(--accent),#22c55e)!important;border:none!important;color:#0f1e16!important}
+.nr-dur{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}
+.nr-dur span{font-size:11px;color:var(--muted);font-weight:700}
+.nr-dur input{width:52px;padding:4px;background:rgba(0,0,0,.3);border:1px solid rgba(74,222,128,.3);color:var(--text);border-radius:6px;text-align:center}
+
 /* WHEEL STYLES */
 .wheel-modal{display:none;position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.85);align-items:center;justify-content:center;backdrop-filter:blur(5px)}
 .wheel-modal.show{display:flex}
@@ -268,7 +283,8 @@ iframe{width:100%;height:100%;display:block;border:0;background:#0a1510;opacity:
     <button class="reset" onclick="resetParts()">Сброс участников</button>
     <button class="winner-btn" onclick="toggleWinnerMenu()">ВЫБРАТЬ ПОБЕДИТЕЛЯ</button>
     <div class="winner-options" id="winnerOptions">
-      <button class="winner-opt" onclick="openWheel()">РУЛЕТКА</button>
+      <button class="winner-opt" onclick="openWheel()">🎡 СТАНДАРТНАЯ</button>
+      <button class="winner-opt" onclick="chooseNewRoulette()">🆕 НОВАЯ</button>
       <button class="winner-opt" onclick="startQuickRoll()">БЫСТРЫЙ РОЛ</button>
       <button class="winner-opt" onclick="startNeverWonRoll()">ДЛЯ ТЕХ КТО НИКОГДА НЕ ВЫИГРЫВАЛ</button>
       <button class="winner-opt" onclick="startVipRoll()">РОЛЛ ТОЛЬКО VIP</button>
@@ -336,6 +352,31 @@ iframe{width:100%;height:100%;display:block;border:0;background:#0a1510;opacity:
     <button class="btn danger" onclick="resetWheelParticipants()">СБРОСИТЬ</button>
     <button class="btn" onclick="openWheelStats()">СТАТИСТИКА</button>
     <button class="btn spin-btn" id="spinBtn" onclick="executeSpin()">КРУТИТЬ!</button>
+  </div>
+</div>
+
+<!-- NEW HORIZONTAL ROULETTE -->
+<div class="modal" id="newRouletteModal">
+  <div class="close-x" onclick="closeNewRoulette()">&times;</div>
+  <div class="tablebox" style="width:900px;max-width:96vw">
+    <h3 class="nr-title">🎰 НОВАЯ РУЛЕТКА</h3>
+    <div class="nr-count" id="new-roulette-pool-count">Участников: 0</div>
+    <div class="nr-stage">
+      <div class="nr-arrow"></div>
+      <div class="nr-window" id="new-roulette-window"><div class="nr-strip" id="new-roulette-strip"></div></div>
+    </div>
+    <div id="new-roulette-result">---</div>
+    <div class="nr-dur">
+      <span>Время (сек):</span>
+      <button class="btn" style="padding:4px 10px;min-width:30px" onclick="adjustNewDur(-1)">-</button>
+      <input type="number" id="new-dur-input" value="5" min="1" max="60">
+      <button class="btn" style="padding:4px 10px;min-width:30px" onclick="adjustNewDur(1)">+</button>
+      <button class="btn" style="padding:4px 8px" onclick="setNewDur(2)">2с</button>
+      <button class="btn" style="padding:4px 8px" onclick="setNewDur(4)">4с</button>
+      <button class="btn" style="padding:4px 8px" onclick="setNewDur(10)">10с</button>
+    </div>
+    <button class="pbtn" onclick="spinNewRoulette()">🎡 КРУТИТЬ</button>
+    <button class="pbtn nr-confirm" id="new-roulette-confirm-btn" onclick="confirmNewRoulette()">✅ ПОДТВЕРДИТЬ</button>
   </div>
 </div>
 
@@ -611,6 +652,120 @@ function adjustTime(sec){timerSeconds=Math.max(0,timerSeconds+sec);window._origT
 function startTimer(){if(timerRunning)return;timerRunning=true;document.getElementById('btnStart').classList.add('active');document.getElementById('btnPause').classList.remove('active');window._origTotal=timerSeconds>0?timerSeconds:60;timerInterval=setInterval(function(){if(timerSeconds>0){timerSeconds--;displayTimer();}else{pauseTimer();document.getElementById('timeLabel').textContent='Финиш';document.getElementById('timeLabel').classList.add('finish');}},1000);}
 function pauseTimer(){timerRunning=false;clearInterval(timerInterval);document.getElementById('btnStart').classList.remove('active');document.getElementById('btnPause').classList.add('active');}
 function toggleWinnerMenu(){winnerMenuOpen=!winnerMenuOpen;document.getElementById('winnerOptions').classList.toggle('show',winnerMenuOpen);}
+
+// ===== NEW HORIZONTAL ROULETTE =====
+var newRoulettePool=[];
+var newRouletteOrder=[];
+var newRouletteSpinning=false;
+var newRouletteWinner=null;
+var newRouletteSpinToken=0;
+var NR_CELL_W=160,NR_GAP=16,NR_WIN=5*160+4*16;
+function chooseNewRoulette(){
+  document.getElementById('winnerOptions').classList.remove('show');
+  winnerMenuOpen=false;
+  openNewRoulette();
+}
+function openNewRoulette(){
+  var pool=Array.from(parts);
+  if(!pool.length){alert('Нет участников!');return;}
+  newRouletteSpinToken++;
+  newRouletteSpinning=false;
+  newRoulettePool=pool;
+  var n=pool.length,repeats=22,wrap=document.getElementById('new-roulette-strip');
+  newRouletteWinner=null;newRouletteOrder=[];
+  for(var r=0;r<repeats;r++)for(var i=0;i<n;i++)newRouletteOrder.push(pool[i]);
+  wrap.innerHTML=newRouletteOrder.map(function(nm){return'<div class="nr-cell">'+esc(nm)+'</div>';}).join('');
+  document.getElementById('new-roulette-pool-count').innerText='Участников: '+n;
+  document.getElementById('new-roulette-result').innerText='---';
+  document.getElementById('new-roulette-confirm-btn').style.display='none';
+  document.getElementById('newRouletteModal').classList.add('open');
+}
+function closeNewRoulette(){
+  newRouletteSpinToken++;
+  newRouletteSpinning=false;
+  document.getElementById('newRouletteModal').classList.remove('open');
+}
+function adjustNewDur(d){
+  var input=document.getElementById('new-dur-input');
+  input.value=Math.max(1,Math.min(60,(parseInt(input.value)||5)+d));
+}
+function setNewDur(value){
+  document.getElementById('new-dur-input').value=Math.max(1,Math.min(60,parseInt(value,10)||5));
+}
+function spinNewRoulette(){
+  if(newRouletteSpinning||!newRoulettePool.length){if(!newRoulettePool.length)alert('Нет участников!');return;}
+  var wrap=document.getElementById('new-roulette-strip');
+  var n=newRoulettePool.length;
+  var winner=newRoulettePool[Math.floor(Math.random()*n)];
+  newRouletteWinner=winner;
+  var baseIdx=newRoulettePool.indexOf(winner);
+  var copy=2+Math.floor(Math.random()*4),index=copy*n+baseIdx;
+  var step=NR_CELL_W+NR_GAP,center=800/2;
+  var startX=center-index*step-NR_CELL_W/2-((22-copy)*n*step);
+  var finalX=center-index*step-NR_CELL_W/2;
+  var seconds=parseInt(document.getElementById('new-dur-input').value,10)||5;
+  var duration=Math.max(1800,seconds*1000*1.35);
+  newRouletteSpinning=true;
+  var token=++newRouletteSpinToken;
+  var windowElement=document.getElementById('new-roulette-window');
+  var confirmButton=document.getElementById('new-roulette-confirm-btn');
+  confirmButton.style.display='none';
+  if(windowElement)windowElement.style.opacity='0';
+  var startTime=performance.now(),lastTick=-1;
+  wrap.querySelectorAll('.nr-cell').forEach(function(cell){cell.classList.remove('is-winner');});
+  wrap.style.transform='translateX('+startX+'px)';
+  document.getElementById('new-roulette-result').innerText='🎰 КРУТИМ...';
+  requestAnimationFrame(function(){if(windowElement)windowElement.style.opacity='1';});
+  function frame(now){
+    if(token!==newRouletteSpinToken||!newRouletteSpinning||!document.getElementById('newRouletteModal').classList.contains('open'))return;
+    var progress=Math.min((now-startTime)/duration,1);
+    var ease=1-Math.pow(1-progress,6);
+    var x=startX+(finalX-startX)*ease;
+    wrap.style.transform='translateX('+x+'px)';
+    var crossed=Math.floor((x-startX)/step);
+    if(crossed!==lastTick){lastTick=crossed;playRouletteTick();}
+    if(progress<1){requestAnimationFrame(frame);}
+    else{
+      newRouletteSpinning=false;
+      wrap.style.transform='translateX('+finalX+'px)';
+      var cells=wrap.querySelectorAll('.nr-cell');
+      if(cells[index])cells[index].classList.add('is-winner');
+      document.getElementById('new-roulette-result').innerText='🏆 Победитель: '+winner;
+      confirmButton.style.display='block';
+    }
+  }
+  requestAnimationFrame(frame);
+}
+function confirmNewRoulette(){
+  if(!newRouletteWinner)return;
+  var winner=newRouletteWinner;
+  closeNewRoulette();
+  showWinner(winner);
+}
+var rouletteTickCounter=0;
+function playRouletteTick(){
+  try{
+    window._actx=window._actx||new (window.AudioContext||window.webkitAudioContext)();
+    var context=window._actx;
+    if(context.state==='suspended')context.resume();
+    var now=context.currentTime;
+    var high=(rouletteTickCounter%2===0);
+    rouletteTickCounter++;
+    var buffer=context.createBuffer(1,Math.floor(context.sampleRate*0.04),context.sampleRate);
+    var samples=buffer.getChannelData(0);
+    for(var i=0;i<samples.length;i++)samples[i]=(Math.random()*2-1)*Math.pow(1-i/samples.length,4);
+    var source=context.createBufferSource();source.buffer=buffer;
+    var filter=context.createBiquadFilter();filter.type='bandpass';filter.frequency.value=high?2400:1800;filter.Q.value=8;
+    var gain=context.createGain();gain.gain.setValueAtTime(high?0.09:0.07,now);gain.gain.exponentialRampToValueAtTime(0.001,now+0.05);
+    source.connect(filter);filter.connect(gain);gain.connect(context.destination);
+    source.start(now);source.stop(now+0.04);
+    var oscillator=context.createOscillator(),bodyGain=context.createGain();
+    oscillator.connect(bodyGain);bodyGain.connect(context.destination);
+    oscillator.type='sine';oscillator.frequency.setValueAtTime(high?180:150,now);
+    bodyGain.gain.setValueAtTime(0.04,now);bodyGain.gain.exponentialRampToValueAtTime(0.001,now+0.06);
+    oscillator.start(now);oscillator.stop(now+0.06);
+  }catch(error){}
+}
 
 // ===== WHEEL FUNCTIONS =====
 function openWheel(){wheelParticipants=Array.from(parts);if(wheelParticipants.length===0){alert('Нет участников!');return;}document.getElementById('wheelModal').classList.add('show');document.getElementById('elim-log').innerText='';currentRotation=0;setSpinMode('elimination');drawWheel(0);}
@@ -1109,6 +1264,7 @@ function closeStats(){document.getElementById('statsModal').classList.remove('sh
 
 function closeModals(){
   closeWinnerCoin();
+  closeNewRoulette();
   document.querySelectorAll('.modal').forEach(function(m){m.classList.remove('open');});
   document.getElementById('winner-screen').classList.remove('open');
   winTimerActive=false;
