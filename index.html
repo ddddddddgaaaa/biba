@@ -443,7 +443,14 @@ iframe{width:100%;height:100%;display:block;border:0;background:#0a1510;opacity:
 <div class="modal" id="modal">
   <div class="tablebox">
     <h3>УЧАСТНИКИ: <span id="cnt2">0</span></h3>
-    <div class="code-row"><label style="white-space:normal;text-align:center">Любое сообщение в чате добавляет автора в список</label></div>
+    <div class="code-row" style="flex-wrap:wrap">
+      <label for="participant-mode" style="white-space:normal">Добавлять по</label>
+      <select id="participant-mode" onchange="saveParticipantSettings()" style="flex:1;min-width:150px;padding:6px;border-radius:6px;background:rgba(0,0,0,.22);color:var(--text);font-size:12px">
+        <option value="any">Любому сообщению</option>
+        <option value="code">Кодовому слову</option>
+      </select>
+      <input id="participant-code" type="text" placeholder="Введите кодовое слово" oninput="saveParticipantSettings()" style="display:none;flex-basis:100%">
+    </div>
     <input class="search" id="search" placeholder="Поиск по нику..." oninput="renderModal()">
     <div class="tb-list" id="tb-list"></div>
     <button class="close" onclick="closeModal()">Закрыть</button>
@@ -453,6 +460,8 @@ iframe{width:100%;height:100%;display:block;border:0;background:#0a1510;opacity:
 <script>
 var CH='bib4ek';
 var parts=new Set(JSON.parse(localStorage.getItem('bib4ek_parts')||'[]'));
+var participantMode=localStorage.getItem('bib4ek_participant_mode')||'any';
+var participantCode=localStorage.getItem('bib4ek_code')||'+';
 var sock=null;
 var vids=['biba1.mp4','biba2.mp4','biba3.mp4'];
 var vidx=0;
@@ -500,6 +509,24 @@ var statistics=JSON.parse(localStorage.getItem('bib4ek_stats')||'[]');
 var currentSession=null;
 var wheelColors=['#1e2937','#334155','#475569','#64748b','#1e3a8a','#312e81','#4338ca','#4c1d95','#6b21a8','#0f766e'];
 
+function updateParticipantModeUI(){
+  var modeSelect=document.getElementById('participant-mode');
+  var codeInput=document.getElementById('participant-code');
+  if(!modeSelect||!codeInput)return;
+  modeSelect.value=participantMode;
+  codeInput.value=participantCode;
+  codeInput.style.display=participantMode==='code'?'block':'none';
+}
+function saveParticipantSettings(){
+  var modeSelect=document.getElementById('participant-mode');
+  var codeInput=document.getElementById('participant-code');
+  participantMode=modeSelect.value==='code'?'code':'any';
+  participantCode=codeInput.value.trim();
+  localStorage.setItem('bib4ek_participant_mode',participantMode);
+  localStorage.setItem('bib4ek_code',participantCode);
+  updateParticipantModeUI();
+}
+updateParticipantModeUI();
 function resetParts(){parts.clear();render();renderModal();}
 function openModal(){renderModal();document.getElementById('modal').classList.add('open');}
 function closeModal(){document.getElementById('modal').classList.remove('open');}
@@ -1164,7 +1191,12 @@ function connect(){
     participantLoginByName[userKey]=loginKey;
     try{localStorage.setItem('bib4ek_participant_logins',JSON.stringify(participantLoginByName));}catch(e){}
 
-    if(!parts.has(user)){parts.add(user);render();renderModal();}
+    var chatText=msg.trim();
+    var isParticipantMessage=chatText.length>0&&(
+      participantMode==='any'||
+      (participantMode==='code'&&participantCode.length>0&&chatText.toLowerCase()===participantCode.toLowerCase())
+    );
+    if(isParticipantMessage&&!parts.has(user)){parts.add(user);render();renderModal();}
 
     var time=new Date().toLocaleTimeString();
     var msgId=tags['id']||null;
